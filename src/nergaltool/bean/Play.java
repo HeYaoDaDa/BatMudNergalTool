@@ -4,6 +4,7 @@ package nergaltool.bean;
  * Play information
  */
 public class Play {
+    //Singleton,instance
     private static final Play play = new Play();
     private String name;
     private int hp;
