@@ -1,8 +1,10 @@
-package nergaltool.trigger;
+package nergaltool.trigger.manager;
 
 
 import com.mythicscape.batclient.interfaces.BatClientPlugin;
 import com.mythicscape.batclient.interfaces.ParsedResult;
+import nergaltool.trigger.bean.MyTrigger;
+import nergaltool.trigger.bean.TriggerBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +37,17 @@ public class MyTriggerManager {
      * @return channel text object
      */
     public synchronized ParsedResult process(BatClientPlugin batClientPlugin, ParsedResult parsedResult) {
-        String strippedText = parsedResult.getStrippedText();
         boolean isMatch = false;
         for (MyTrigger myTrigger : myTriggerList) {
             //continue no action trigger
             if (!myTrigger.isAction()) continue;
-            Matcher matcher = myTrigger.matcher(strippedText);
+            Matcher matcher;
+            //if is expand,then use OriginalText match
+            if (myTrigger.isExpand()) {
+                matcher = myTrigger.matcher(parsedResult.getOriginalText());
+            } else {
+                matcher = myTrigger.matcher(parsedResult.getStrippedText());
+            }
             if (matcher.find()) {
                 isMatch = true;
                 myTrigger.getTriggerBody().body(batClientPlugin, matcher);
@@ -67,9 +74,10 @@ public class MyTriggerManager {
      * @param triggerBody trigger match method
      * @param isAction    action
      * @param isGag       gag
+     * @param isExpand    expand
      */
-    public void newTrigger(String name, String regexp, TriggerBody triggerBody, boolean isAction, boolean isGag) {
-        newTrigger(new MyTrigger(name, regexp, triggerBody, isAction, isGag));
+    public void newTrigger(String name, String regexp, TriggerBody triggerBody, boolean isAction, boolean isGag, boolean isExpand) {
+        newTrigger(new MyTrigger(name, regexp, triggerBody, isAction, isGag, isExpand));
     }
 
     /**

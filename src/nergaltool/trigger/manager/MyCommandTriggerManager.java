@@ -1,7 +1,9 @@
-package nergaltool.trigger;
+package nergaltool.trigger.manager;
 
 
 import com.mythicscape.batclient.interfaces.BatClientPlugin;
+import nergaltool.trigger.bean.MyTrigger;
+import nergaltool.trigger.bean.TriggerBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +69,7 @@ public class MyCommandTriggerManager {
      * @param isGag       gag
      */
     public void newTrigger(String name, String regexp, TriggerBody triggerBody, boolean isAction, boolean isGag) {
-        newTrigger(new MyTrigger(name, regexp, triggerBody, isAction, isGag));
+        newTrigger(new MyTrigger(name, regexp, triggerBody, isAction, isGag,false));//if command no color code so no need set expand
     }
 
     /**

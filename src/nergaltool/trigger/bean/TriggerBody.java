@@ -1,4 +1,4 @@
-package nergaltool.trigger;
+package nergaltool.trigger.bean;
 
 import com.mythicscape.batclient.interfaces.BatClientPlugin;
 

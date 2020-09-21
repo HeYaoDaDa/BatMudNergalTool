@@ -1,4 +1,4 @@
-package nergaltool.trigger;
+package nergaltool.trigger.bean;
 
 
 import java.util.regex.Matcher;
@@ -13,13 +13,15 @@ public class MyTrigger {
     private TriggerBody triggerBody;
     private boolean isAction;
     private boolean isGag;
+    private boolean isExpand;//add OriginalText match
 
-    public MyTrigger(String name, String regexp, TriggerBody triggerBody, boolean isAction, boolean isGag) {
+    public MyTrigger(String name, String regexp, TriggerBody triggerBody, boolean isAction, boolean isGag, boolean isExpand) {
         this.name = name;
         this.regexp = regexp;
         this.triggerBody = triggerBody;
         this.isAction = isAction;
         this.isGag = isGag;
+        this.isExpand = isExpand;
     }
 
     public Matcher matcher(String s) {
@@ -64,5 +66,13 @@ public class MyTrigger {
 
     public void setGag(boolean gag) {
         isGag = gag;
+    }
+
+    public boolean isExpand() {
+        return isExpand;
+    }
+
+    public void setExpand(boolean expand) {
+        isExpand = expand;
     }
 }
