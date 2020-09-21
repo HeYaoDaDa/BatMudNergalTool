@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="miglayout15-swing">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/miglayout15-swing.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/xstream-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/bat_interfaces.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/bat_interfaces.jar!/javadocs" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>
