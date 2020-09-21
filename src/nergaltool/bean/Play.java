@@ -1,5 +1,8 @@
 package nergaltool.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Play information
  */
@@ -7,6 +10,7 @@ public class Play {
     //Singleton,instance
     private static final Play play = new Play();
     private String name;
+    private static List<Minion> minionList = new ArrayList<>();
     private int hp;
     private int sp;
     private int ep;
@@ -36,6 +40,10 @@ public class Play {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Minion> getMinionList() {
+        return minionList;
     }
 
     public int getHp() {

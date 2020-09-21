@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="NergalToolNew:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/NergalTool_jar</output-path>
+    <root id="archive" name="NergalToolNew.jar">
+      <element id="module-output" name="NergalToolNew" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>
