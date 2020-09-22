@@ -125,4 +125,21 @@ public class Play {
     public void setLastSleepTime(long lastSleepTime) {
         this.lastSleepTime = lastSleepTime;
     }
+
+    @Override
+    public String toString() {
+        return "Play{" +
+                "name='" + name + '\'' +
+                ", hp=" + hp +
+                ", sp=" + sp +
+                ", ep=" + ep +
+                ", hpMax=" + hpMax +
+                ", spMax=" + spMax +
+                ", epMax=" + epMax +
+                ", vitae=" + vitae +
+                ", potentia=" + potentia +
+                ", lastHibernatingTime=" + lastHibernatingTime +
+                ", lastSleepTime=" + lastSleepTime +
+                '}';
+    }
 }

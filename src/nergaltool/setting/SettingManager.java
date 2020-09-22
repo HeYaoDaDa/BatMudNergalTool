@@ -134,4 +134,11 @@ public class SettingManager {
             newSetting(new Setting(settingNodeList.item(i)));
         }
     }
+
+    @Override
+    public String toString() {
+        return "SettingManager{" +
+                "settingList=" + settingList +
+                '}';
+    }
 }
