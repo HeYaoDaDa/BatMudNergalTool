@@ -64,6 +64,7 @@ public class ClwAction extends MyAction {
         List<String> triggerList = new ArrayList<>();
         triggerList.add("NotSpClwAction");
         triggerList.add("SpellEndClwAction");
+        triggerList.add("Movement");
         myTriggerManager.newTrigger("NotSpClwAction",
                 "^You do not have enough spell points to cast the spell",
                 (batClientPlugin, matcher) -> {
@@ -81,5 +82,10 @@ public class ClwAction extends MyAction {
                         }
                     }, 500);
                 }, true, false, false);
+        myTriggerManager.newTrigger("Movement",
+                "^Your movement prevents you from casting the spell.",
+                (batClientPlugin, matcher) ->
+                        offTrigger(triggerList),
+                true, false, false);
     }
 }
