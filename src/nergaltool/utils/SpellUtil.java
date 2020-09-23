@@ -1,6 +1,7 @@
 package nergaltool.utils;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
+import nergaltool.setting.SettingManager;
 
 /**
  * spell util
@@ -21,5 +22,11 @@ public class SpellUtil {
     }
     public static void clw(ClientGUI clientGUI,String traget){
         clientGUI.doCommand("@cast cure light wounds at "+traget);
+    }
+    public static void food(ClientGUI clientGUI,String traget,int size,String energy){
+        clientGUI.doCommand("@cast nourish enthralled at "+ traget + " consume " + size + " " + energy);
+    }
+    public static void bell(ClientGUI clientGUI){
+        clientGUI.doCommand("@bell " + SettingManager.getInstance().getSetting("playName").getValue());
     }
 }

@@ -149,7 +149,6 @@ public class SettingManager {
         newSetting("battleEndClw", "on", "battle end use clw heal minions", SettingType.BOOLEAN);
         newSetting("battleEndFood", "on", "battle end use food vitae heal minions", SettingType.BOOLEAN);
         newSetting("battleEndWaitSpr", "on", "battle end wait sp to spell cost", SettingType.BOOLEAN);
-        newSetting("foodPotentia", "on", "food potentia to target minion", SettingType.BOOLEAN);
 
         newSetting("battleEndStartHealHpRate", "60", "set battle end < X% hp start heal(clw and food)", SettingType.INT);
         newSetting("clwEndHpLoss", "40", "set hp>=hpmax-X end clw", SettingType.INT);
@@ -160,7 +159,9 @@ public class SettingManager {
         newSetting("eachVitaeHpr", "8", "set each vitae hp", SettingType.INT);
         newSetting("foodBlackList", "", "set food blacklist(battleEnd and command)", SettingType.LIST);
 
+        newSetting("foodPotentia", "on", "food potentia to target minion", SettingType.BOOLEAN);
         newSetting("foodPotentiaTraget", "minion", "food potentia to target minion", SettingType.STRING);
+        newSetting("foodPotentiaSize", "800", "have XX potentia food potentia", SettingType.INT);
     }
 
     @Override

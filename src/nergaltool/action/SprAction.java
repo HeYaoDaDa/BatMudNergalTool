@@ -1,6 +1,7 @@
-package nergaltool.action.base;
+package nergaltool.action;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
+import nergaltool.action.base.MyAction;
 import nergaltool.trigger.manager.MyTriggerManager;
 import nergaltool.utils.SpellUtil;
 
@@ -10,6 +11,9 @@ import java.util.List;
 import static nergaltool.utils.Global.SLEEP_CD;
 import static nergaltool.utils.Global.SLEEP_FAIL_ADD_INTERVAL;
 
+/**
+ * spr action
+ */
 public class SprAction extends MyAction {
     private final int number;//sp to number then exit
 

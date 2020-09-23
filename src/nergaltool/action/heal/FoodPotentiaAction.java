@@ -1,91 +1,75 @@
 package nergaltool.action.heal;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
-import nergaltool.action.base.MyAction;
 import nergaltool.action.SprAction;
+import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
-import nergaltool.utils.Global;
+import nergaltool.setting.Setting;
+import nergaltool.setting.SettingManager;
 import nergaltool.utils.SpellUtil;
+import nergaltool.utils.TextUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static nergaltool.utils.Global.FOOD_CD;
+import static nergaltool.utils.Global.PLUGIN_NAME;
+
 /**
- * clw action
+ * food potentia action
  */
-public class ClwAction extends MyAction {
-
-
-    public ClwAction(ClientGUI clientGUI) {
+public class FoodPotentiaAction extends MyAction {
+    public FoodPotentiaAction(ClientGUI clientGUI) {
         super(clientGUI);
     }
 
     @Override
     public void run() {
-        Minion target = getTraget();
-        if (target != null) {
-            if (play.getSp() < SpellUtil.clwSp) {//sp empty
-                startSpr();
-            } else {
-                clientGUI.printText(Global.PLUGIN_NAME,"target:"+target.getName()+"\n");
-                startClw(target);
-            }
+        if (play.getPotentia() > Integer.parseInt(settingManager.getSetting("foodPotentiaSize").getValue())){
+            startFood();
         }else {
             super.run();
         }
     }
 
     /**
-     * find need clw minion
-     *
-     * @return need clw minion
-     */
-    private Minion getTraget() {
-        Minion target = null;
-        for (Minion minion : play.getMinionList()) {
-            if (minion.getHp() <= minion.getHpMax() - Integer.parseInt(settingManager.getSetting("clwEndHpLoss").getValue()) &&
-                    !settingManager.getSetting("clwBlackList").getListValue().contains(minion.getName())) {
-                target = minion;
-            }
-        }
-        return target;
-    }
-
-    /**
-     * wait spr to clwsp
+     * wait spr to foodsp
      */
     private void startSpr() {
-        SprAction sprAction = new SprAction(clientGUI, SpellUtil.clwSp);
+        SprAction sprAction = new SprAction(clientGUI, SpellUtil.foodSp);
         sprAction.decorate(this);
         sprAction.run();
     }
 
     /**
-     * clw
-     * @param target clw target
+     * food
+     *
      */
-    private void startClw(Minion target) {
-        SpellUtil.clw(clientGUI, target.getName());
+    private void startFood() {
+        SpellUtil.food(clientGUI,
+                settingManager.getSetting("foodPotentiaTraget").getValue(),
+                play.getPotentia(),
+                "potentia");
         List<String> triggerList = new ArrayList<>();
-        triggerList.add("NotSpClwAction");
-        triggerList.add("SpellEndClwAction");
+        triggerList.add("NotSpFoodPotentiaAction");
+        triggerList.add("SpellEndFoodPotentiaAction");
         triggerList.add("Movement");
-        myTriggerManager.newTrigger("NotSpClwAction",
+        myTriggerManager.newTrigger("NotSpFoodPotentiaAction",
                 "^You do not have enough spell points to cast the spell",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
                     startSpr();
                 }, true, false, false);
-        myTriggerManager.newTrigger("SpellEndClwAction",
+        myTriggerManager.newTrigger("SpellEndFoodPotentiaAction",
                 "^You are done with the chant.",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            ClwAction.this.run();
+                            FoodPotentiaAction.this.run();
                         }
                     }, 500);
                 }, true, false, false);
