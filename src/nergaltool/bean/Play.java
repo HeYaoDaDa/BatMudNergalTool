@@ -10,6 +10,7 @@ public class Play {
     //Singleton,instance
     private static final Play play = new Play();
     private String name;
+    private boolean combat;
     private static final List<Minion> minionList = new ArrayList<>();
     private int hp;
     private int hpMax;
@@ -23,10 +24,11 @@ public class Play {
     private long lastSleepTime;
 
     //Singleton,private constructor
-    private Play(){}
+    private Play() {
+    }
 
     //Singleton,get single instance
-    public static Play getInstance(){
+    public static Play getInstance() {
         return play;
     }
 
@@ -36,6 +38,14 @@ public class Play {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isCombat() {
+        return combat;
+    }
+
+    public void setCombat(boolean combat) {
+        this.combat = combat;
     }
 
     public List<Minion> getMinionList() {
@@ -126,6 +136,7 @@ public class Play {
     public String toString() {
         return "Play{" +
                 "name='" + name + '\'' +
+                ", combat=" + combat +
                 ", hp=" + hp +
                 ", hpMax=" + hpMax +
                 ", sp=" + sp +

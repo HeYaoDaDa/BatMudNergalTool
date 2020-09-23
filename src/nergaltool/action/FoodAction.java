@@ -1,7 +1,6 @@
-package nergaltool.action.heal;
+package nergaltool.action;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
-import nergaltool.action.SprAction;
 import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
 import nergaltool.utils.SpellUtil;

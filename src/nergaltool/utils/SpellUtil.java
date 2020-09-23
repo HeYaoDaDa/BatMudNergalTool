@@ -29,4 +29,10 @@ public class SpellUtil {
     public static void bell(ClientGUI clientGUI){
         clientGUI.doCommand("@bell " + SettingManager.getInstance().getSetting("playName").getValue());
     }
+    public static void harvest(ClientGUI clientGUI,String monster){
+        clientGUI.doCommand("@cast Harvest vitae at " + monster);
+    }
+    public static void reap(ClientGUI clientGUI,String monster){
+        clientGUI.doCommand("@cast Reap potentia at " + monster);
+    }
 }

@@ -1,20 +1,25 @@
 package nergaltool;
 
 import com.mythicscape.batclient.interfaces.*;
-import nergaltool.action.heal.ClwAction;
+import nergaltool.action.*;
+import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
 import nergaltool.bean.Play;
 import nergaltool.setting.SettingManager;
 import nergaltool.trigger.manager.MyCommandTriggerManager;
 import nergaltool.trigger.manager.MyTriggerManager;
 import nergaltool.utils.Global;
+import nergaltool.utils.SpellUtil;
 import nergaltool.utils.TextUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * plugin main
@@ -26,6 +31,8 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
     private final SettingManager settingManager = SettingManager.getInstance();
     private final MyTriggerManager myTriggerManager = MyTriggerManager.getInstance();
     private final MyCommandTriggerManager myCommandTriggerManager = MyCommandTriggerManager.getInstance();
+    private Timer timer;
+    private List<String> mobs = new ArrayList<>();
 
     @Override
     public void loadPlugin() {
@@ -210,7 +217,53 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                         }
                     }
                 }, true, false, false);
+        //Combat and Scan is a pair
+        myTriggerManager.newTrigger("Combat",
+                "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\* Round",
+                (batClientPlugin, matcher) -> {
+                    if (!play.isCombat()) {
+                        play.setCombat(true);
+                        timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                getClientGUI().doCommand("@scan all");
+                            }
+                        }, 1000, 2500);
+                    }
+                }, true, false, false);
+        //Combat end
+        myTriggerManager.newTrigger("Scan",
+                "You are not in combat right now.",
+                (batClientPlugin, matcher) -> {
+                    if (play.isCombat()) {
+                        play.setCombat(false);
+                        timer.cancel();
+                        combatEnd();
+                    }
+                }, true, false, false);//Gag one scan
+        //move to new room
+        myTriggerManager.newTrigger("NewRoom", "^(Obvious exits are)|^(Obvious exit is)|(Exits?:  )",
+                (batClientPlugin, matcher) -> {
+                    mobs.clear();
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            myCLientGUI.printText(getName(), "The room have :\n");
+                            for (String s : mobs) {
+                                getClientGUI().printText(getName(), "    " + s + "\n");
+                            }
+                        }
+                    }, 50);
+                }, true, false, false);
+        //room monster,color code
+        myTriggerManager.newTrigger("RoomMonster",
+                "^\u001B\\[1;32m([A-Za-z,'\\s]+)\u001B\\[0m$",
+                (batClientPlugin, matcher) -> {
+                    mobs.add(matcher.group(1));
+                }, true, false, true);
     }
+
 
     private void loadCommandTrigger() {
         //debug info
@@ -236,6 +289,80 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                     clwAction.run();
                     myCLientGUI.printText(getName(), "clw end\n");
                 }, true, true);
+        //reply
+        myCommandTriggerManager.newTrigger("nergaltoolReply", "^nergaltool reply$",
+                (batClientPlugin, matcher) -> {
+                    reply();
+                }, true, true);
+        //init
+        myCommandTriggerManager.newTrigger("nergaltoolInit", "^nergaltool init$",
+                (batClientPlugin, matcher) -> {
+                    SpellUtil.hvSp = SpellUtil.rpSp = SpellUtil.foodSp = SpellUtil.clwSp = 0;
+                    new InitStatsAction(myCLientGUI).run();
+                }, true, true);
+        //set show
+        myCommandTriggerManager.newTrigger("nergaltoolSet", "^nergaltool set$",
+                (batClientPlugin, matcher) -> {
+                    myCLientGUI.printText(Global.GENERIC, settingManager.toString());
+                }, true, true);
+        //set show
+        myCommandTriggerManager.newTrigger("nergaltoolSetValue", "^nergaltool set ([a-zA-Z]+) ?([a-zA-Z0-9\\s]+)?",
+                (batClientPlugin, matcher) -> {
+                    settingManager.interpreter(matcher);
+                }, true, true);
+
+    }
+
+    /**
+     * reply
+     */
+    private void reply() {
+        MyAction start = new ReplyAction(myCLientGUI);
+        MyAction food = new FoodAction(myCLientGUI);
+        MyAction clw = new ClwAction(myCLientGUI);
+        MyAction foodPotentia = new FoodPotentiaAction(myCLientGUI);
+        MyAction spr = new SprAction(myCLientGUI, Math.max(SpellUtil.hvSp, SpellUtil.rpSp));
+        MyAction bell = new BellAction(myCLientGUI);
+
+        start.decorate(food);
+        food.decorate(clw);
+        clw.decorate(foodPotentia);
+        foodPotentia.decorate(spr);
+        spr.decorate(bell);
+
+        if (SpellUtil.foodSp == 0) {
+            MyAction init = new InitStatsAction(myCLientGUI);
+            start.decorate(init);
+            init.decorate(food);
+        }
+
+        start.run();
+    }
+
+    /**
+     * combat end
+     */
+    private void combatEnd() {
+        boolean needHeal = false;
+        int maxSp = Math.max(SpellUtil.hvSp, SpellUtil.hvSp);
+        for (Minion minion : minionList) {
+            if (minion.getHp() <= minion.getHpMax() * Integer.parseInt(settingManager.getSetting("battleEndStartHealHpRate").getValue()) * 0.01) {
+                needHeal = true;
+                break;
+            }
+        }
+        if (needHeal && Boolean.parseBoolean(settingManager.getSetting("battleEndHeal").getValue())) {
+            reply();
+        } else {
+            if (play.getSp() < maxSp) {
+                MyAction spr = new SprAction(myCLientGUI, maxSp);
+                MyAction bell = new BellAction(myCLientGUI);
+                spr.decorate(bell);
+                spr.run();
+            } else {
+                new BellAction(myCLientGUI).run();
+            }
+        }
     }
 
 }

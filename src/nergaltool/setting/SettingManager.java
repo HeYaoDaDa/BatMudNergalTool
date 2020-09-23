@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 
 /**
  * setting manager
@@ -146,9 +147,7 @@ public class SettingManager {
     public void init() {
         newSetting("playName", "NOSET", "@bell need use", SettingType.STRING);
 //        newSetting("triggerDebug","on","trigger match print trigger name",SettingType.BOOLEAN);
-        newSetting("battleEndClw", "on", "battle end use clw heal minions", SettingType.BOOLEAN);
-        newSetting("battleEndFood", "on", "battle end use food vitae heal minions", SettingType.BOOLEAN);
-        newSetting("battleEndWaitSpr", "on", "battle end wait sp to spell cost", SettingType.BOOLEAN);
+        newSetting("battleEndHeal", "true", "battle end use reply", SettingType.BOOLEAN);
 
         newSetting("battleEndStartHealHpRate", "60", "set battle end < X% hp start heal(clw and food)", SettingType.INT);
         newSetting("clwEndHpLoss", "40", "set hp>=hpmax-X end clw", SettingType.INT);
@@ -159,15 +158,27 @@ public class SettingManager {
         newSetting("eachVitaeHpr", "8", "set each vitae hp", SettingType.INT);
         newSetting("foodBlackList", "", "set food blacklist(battleEnd and command)", SettingType.LIST);
 
-        newSetting("foodPotentia", "on", "food potentia to target minion", SettingType.BOOLEAN);
+        newSetting("foodPotentia", "true", "food potentia to target minion", SettingType.BOOLEAN);
         newSetting("foodPotentiaTraget", "minion", "food potentia to target minion", SettingType.STRING);
         newSetting("foodPotentiaSize", "800", "have XX potentia food potentia", SettingType.INT);
     }
 
+    public void interpreter(Matcher matcher){
+        for (Setting setting:settingList){
+            if (setting.getName().equals(matcher.group(1))){
+                setting.interpreter(matcher.group(2));
+                break;
+            }
+        }
+    }
+
     @Override
     public String toString() {
-        return "SettingManager{" +
-                "settingList=" + settingList +
-                '}';
+        StringBuilder s = new StringBuilder("--------------Setting--------------\n");
+        for (Setting setting:settingList){
+            s.append(setting.toString()).append("\n");
+        }
+        s.append("--------------Setting End----------\n");
+        return s.toString();
     }
 }

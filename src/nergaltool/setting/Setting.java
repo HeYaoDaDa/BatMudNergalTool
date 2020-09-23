@@ -94,16 +94,7 @@ public class Setting {
                     return false;
                 }
             case BOOLEAN:
-                if (strings.length < 2) {
-                    return false;
-                }
-                if ("on".equals(strings[0])) {
-                    value = "on";
-                    return true;
-                } else if ("off".equals(strings[0])) {
-                    value = "off";
-                    return true;
-                }
+                value = data;
                 break;
             case LIST:
                 if (strings.length < 2) {
@@ -145,12 +136,12 @@ public class Setting {
 
     @Override
     public String toString() {
-        return "Setting{" +
-                "name='" + name + '\'' +
-                ", value='" + value + '\'' +
-                ", describe='" + describe + '\'' +
-                ", type=" + type +
-                ", listValue=" + listValue +
-                '}';
+        StringBuilder s = new StringBuilder(name + ": " + value + "   " + describe);
+        if (type==SettingType.LIST){
+            for (String name:listValue){
+                s.append("\n\t").append(name);
+            }
+        }
+        return s.toString();
     }
 }
