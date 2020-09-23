@@ -69,6 +69,10 @@ public class Setting {
         this.type = type;
     }
 
+    public List<String> getListValue() {
+        return listValue;
+    }
+
     /**
      * use commandline update setting
      *

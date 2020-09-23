@@ -15,7 +15,7 @@ import java.util.regex.Matcher;
  */
 public class MyTriggerManager {
     //Singleton,instance
-    public static MyTriggerManager myTriggerManager = new MyTriggerManager();
+    private static MyTriggerManager myTriggerManager = new MyTriggerManager();
 
     //manager Trigger
     private final List<MyTrigger> myTriggerList = new ArrayList<>();

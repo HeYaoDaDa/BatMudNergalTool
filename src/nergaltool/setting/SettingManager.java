@@ -28,7 +28,7 @@ public class SettingManager {
     public static SettingManager settingManager = new SettingManager();
     private final List<Setting> settingList = new ArrayList<>();
 
-    private final String pluginDir = File.separator + "conf"+File.separator+ Global.PLUGIN_NAME;
+    private final String pluginDir = File.separator + "conf" + File.separator + Global.PLUGIN_NAME;
     private final String settingXmlFile = pluginDir + File.separator + "Setting.xml";
 
     //Singleton,private constructor
@@ -96,9 +96,9 @@ public class SettingManager {
      */
     public void save(String basepath) throws ParserConfigurationException, TransformerException {
         //if dir is no exists then mkdir
-        File dir = new File(basepath+pluginDir);
-        if (!dir.exists()){
-            if (!dir.mkdir()){//mkdir fail then return
+        File dir = new File(basepath + pluginDir);
+        if (!dir.exists()) {
+            if (!dir.mkdir()) {//mkdir fail then return
                 return;
             }
         }
@@ -119,6 +119,14 @@ public class SettingManager {
         tf.transform(new DOMSource(document), new StreamResult(new File(basepath + settingXmlFile)));
     }
 
+    /**
+     * read xml file
+     *
+     * @param basepath batclient file path
+     * @throws ParserConfigurationException error
+     * @throws IOException                  error
+     * @throws SAXException                 error
+     */
     public void read(String basepath) throws ParserConfigurationException, IOException, SAXException {
         File file = new File(basepath + settingXmlFile);
         if (!file.exists()) {//if no xml file then exit
@@ -133,6 +141,26 @@ public class SettingManager {
         for (int i = 0; i < settingNodeList.getLength(); i++) {
             newSetting(new Setting(settingNodeList.item(i)));
         }
+    }
+
+    public void init() {
+        newSetting("playName", "NOSET", "@bell need use", SettingType.STRING);
+//        newSetting("triggerDebug","on","trigger match print trigger name",SettingType.BOOLEAN);
+        newSetting("battleEndClw", "on", "battle end use clw heal minions", SettingType.BOOLEAN);
+        newSetting("battleEndFood", "on", "battle end use food vitae heal minions", SettingType.BOOLEAN);
+        newSetting("battleEndWaitSpr", "on", "battle end wait sp to spell cost", SettingType.BOOLEAN);
+        newSetting("foodPotentia", "on", "food potentia to target minion", SettingType.BOOLEAN);
+
+        newSetting("battleEndStartHealHpRate", "60", "set battle end < X% hp start heal(clw and food)", SettingType.INT);
+        newSetting("clwEndHpLoss", "40", "set hp>=hpmax-X end clw", SettingType.INT);
+        newSetting("clwBlackList", "", "set clw blacklist(battleEnd and command)", SettingType.LIST);
+
+        newSetting("foodHpLoss", "200", "set hp<=hpmax-X start food", SettingType.INT);
+        newSetting("foodMaxSize", "50", "set food vitae max size", SettingType.INT);
+        newSetting("eachVitaeHpr", "8", "set each vitae hp", SettingType.INT);
+        newSetting("foodBlackList", "", "set food blacklist(battleEnd and command)", SettingType.LIST);
+
+        newSetting("foodPotentiaTraget", "minion", "food potentia to target minion", SettingType.STRING);
     }
 
     @Override

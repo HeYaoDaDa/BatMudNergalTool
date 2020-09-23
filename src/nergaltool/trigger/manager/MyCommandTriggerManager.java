@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
  */
 public class MyCommandTriggerManager {
     //Singleton,instance
-    public static MyCommandTriggerManager myCommandTriggerManager = new MyCommandTriggerManager();
+    private static MyCommandTriggerManager myCommandTriggerManager = new MyCommandTriggerManager();
 
     //manager Trigger
     private final List<MyTrigger> myTriggerList = new ArrayList<>();

@@ -10,12 +10,12 @@ public class Play {
     //Singleton,instance
     private static final Play play = new Play();
     private String name;
-    private static List<Minion> minionList = new ArrayList<>();
+    private static final List<Minion> minionList = new ArrayList<>();
     private int hp;
-    private int sp;
-    private int ep;
     private int hpMax;
+    private int sp;
     private int spMax;
+    private int ep;
     private int epMax;
     private int vitae;
     private int potentia;
@@ -27,10 +27,6 @@ public class Play {
 
     //Singleton,get single instance
     public static Play getInstance(){
-        return play;
-    }
-
-    public static Play getPlay() {
         return play;
     }
 
@@ -131,10 +127,10 @@ public class Play {
         return "Play{" +
                 "name='" + name + '\'' +
                 ", hp=" + hp +
-                ", sp=" + sp +
-                ", ep=" + ep +
                 ", hpMax=" + hpMax +
+                ", sp=" + sp +
                 ", spMax=" + spMax +
+                ", ep=" + ep +
                 ", epMax=" + epMax +
                 ", vitae=" + vitae +
                 ", potentia=" + potentia +
