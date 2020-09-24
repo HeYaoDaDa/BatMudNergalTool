@@ -101,7 +101,7 @@ public class Minion {
                 ", spMax=" + spMax +
                 ", ep=" + ep +
                 ", epMax=" + epMax +
-                ", lastFoodTime=" + lastFoodTime +
+                ", lastFoodTime=" + ((System.currentTimeMillis() - lastFoodTime) / 1000) +
                 '}';
     }
 }

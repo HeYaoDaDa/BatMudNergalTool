@@ -1,6 +1,8 @@
 package nergaltool.setting;
 
+import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.utils.Global;
+import nergaltool.utils.TextUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -163,11 +165,22 @@ public class SettingManager {
         newSetting("foodPotentiaSize", "800", "have XX potentia food potentia", SettingType.INT);
     }
 
-    public void interpreter(Matcher matcher){
-        for (Setting setting:settingList){
-            if (setting.getName().equals(matcher.group(1))){
-                setting.interpreter(matcher.group(2));
-                break;
+    /**
+     * match show set and set value
+     * @param clientGUI context
+     * @param matcher matcher
+     */
+    public void interpreter(ClientGUI clientGUI, Matcher matcher){
+        if (matcher.group(1)==null){//show set
+            clientGUI.printText(Global.GENERIC, settingManager.toString());
+        }else {
+            for (Setting setting:settingList){
+                if (setting.getName().equals(matcher.group(1))){
+                    if (!setting.interpreter(matcher.group(2))){//if fail print info
+                        clientGUI.printText(Global.GENERIC, TextUtil.colorText("Set fail\n",TextUtil.RED));
+                    }
+                    break;
+                }
             }
         }
     }

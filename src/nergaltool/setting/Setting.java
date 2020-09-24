@@ -84,7 +84,7 @@ public class Setting {
         switch (type) {
             case STRING:
                 value = data;
-                break;
+                return true;
             case INT:
                 Pattern pattern = Pattern.compile("^[\\d]*$");
                 if (pattern.matcher(data).matches()) {
@@ -95,7 +95,7 @@ public class Setting {
                 }
             case BOOLEAN:
                 value = data;
-                break;
+                return true;
             case LIST:
                 if (strings.length < 2) {
                     return false;

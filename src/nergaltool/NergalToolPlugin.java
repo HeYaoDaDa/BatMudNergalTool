@@ -2,6 +2,7 @@ package nergaltool;
 
 import com.mythicscape.batclient.interfaces.*;
 import nergaltool.action.*;
+import nergaltool.action.base.InitStatsAction;
 import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
 import nergaltool.bean.Play;
@@ -9,6 +10,7 @@ import nergaltool.setting.SettingManager;
 import nergaltool.trigger.manager.MyCommandTriggerManager;
 import nergaltool.trigger.manager.MyTriggerManager;
 import nergaltool.utils.Global;
+import nergaltool.utils.MonsterInformation;
 import nergaltool.utils.SpellUtil;
 import nergaltool.utils.TextUtil;
 import org.xml.sax.SAXException;
@@ -39,6 +41,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
         settingManager.init();
         try {
             settingManager.read(getBaseDirectory());
+            MonsterInformation.read(getBaseDirectory());
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }
@@ -68,6 +71,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
     public void clientExit() {
         try {
             settingManager.save(getBaseDirectory());
+            MonsterInformation.save(getBaseDirectory());
         } catch (ParserConfigurationException | TransformerException e) {
             e.printStackTrace();
         }
@@ -259,9 +263,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
         //room monster,color code
         myTriggerManager.newTrigger("RoomMonster",
                 "^\u001B\\[1;32m([A-Za-z,'\\s]+)\u001B\\[0m$",
-                (batClientPlugin, matcher) -> {
-                    mobs.add(matcher.group(1));
-                }, true, false, true);
+                (batClientPlugin, matcher) -> mobs.add(matcher.group(1)), true, false, true);
     }
 
 
@@ -291,9 +293,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                 }, true, true);
         //reply
         myCommandTriggerManager.newTrigger("nergaltoolReply", "^nergaltool reply$",
-                (batClientPlugin, matcher) -> {
-                    reply();
-                }, true, true);
+                (batClientPlugin, matcher) -> reply(), true, true);
         //init
         myCommandTriggerManager.newTrigger("nergaltoolInit", "^nergaltool init$",
                 (batClientPlugin, matcher) -> {
@@ -301,16 +301,32 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                     new InitStatsAction(myCLientGUI).run();
                 }, true, true);
         //set show
-        myCommandTriggerManager.newTrigger("nergaltoolSet", "^nergaltool set$",
-                (batClientPlugin, matcher) -> {
-                    myCLientGUI.printText(Global.GENERIC, settingManager.toString());
-                }, true, true);
+        myCommandTriggerManager.newTrigger("nergaltoolSet", "^nergaltool set ?([a-zA-Z]+)? ?([a-zA-Z0-9\\s]+)?",
+                (batClientPlugin, matcher) -> settingManager.interpreter(myCLientGUI, matcher), true, true);
         //set show
-        myCommandTriggerManager.newTrigger("nergaltoolSetValue", "^nergaltool set ([a-zA-Z]+) ?([a-zA-Z0-9\\s]+)?",
+        myCommandTriggerManager.newTrigger("nergaltoolMonster", "^nergaltool monster",
+                (batClientPlugin, matcher) -> MonsterInformation.interpreter(myCLientGUI, matcher), true, true);
+        //harvest
+        myCommandTriggerManager.newTrigger("nergaltoolharv", "^nergaltool harvest$",
                 (batClientPlugin, matcher) -> {
-                    settingManager.interpreter(matcher);
+                    if (mobs.size() >= 1) {
+                        boolean isTwo = false;
+                        String monsterName = mobs.get(0);
+                        for (String s : MonsterInformation.monsterList) {
+                            if (monsterName.equals(s)) {
+                                isTwo = true;
+                                break;
+                            }
+                        }
+                        if (!isTwo)
+                            MonsterInformation.monsterList.add(monsterName);
+                        MyAction myAction = new HarvestAction(myCLientGUI, monsterName);
+                        myAction.run();
+                    } else {
+                        getClientGUI().doCommand("@bell " + settingManager.getSetting("playName").getValue());
+                        getClientGUI().printText(Global.GENERIC, TextUtil.colorText("no harvest here\n", TextUtil.RED));
+                    }
                 }, true, true);
-
     }
 
     /**
@@ -344,7 +360,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
      */
     private void combatEnd() {
         boolean needHeal = false;
-        int maxSp = Math.max(SpellUtil.hvSp, SpellUtil.hvSp);
+        int maxSp = Math.max(SpellUtil.hvSp, SpellUtil.rpSp);
         for (Minion minion : minionList) {
             if (minion.getHp() <= minion.getHpMax() * Integer.parseInt(settingManager.getSetting("battleEndStartHealHpRate").getValue()) * 0.01) {
                 needHeal = true;

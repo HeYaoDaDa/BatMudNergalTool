@@ -3,7 +3,6 @@ package nergaltool.action;
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
-import nergaltool.utils.Global;
 import nergaltool.utils.SpellUtil;
 
 import java.util.ArrayList;
@@ -23,12 +22,11 @@ public class ClwAction extends MyAction {
 
     @Override
     public void run() {
-        Minion target = getTraget();
+        Minion target = getTarget();
         if (target != null) {
             if (play.getSp() < SpellUtil.clwSp) {//sp empty
                 startSpr();
             } else {
-                clientGUI.printText(Global.PLUGIN_NAME,"target:"+target.getName()+"\n");
                 startClw(target);
             }
         }else {
@@ -41,7 +39,7 @@ public class ClwAction extends MyAction {
      *
      * @return need clw minion
      */
-    private Minion getTraget() {
+    private Minion getTarget() {
         Minion target = null;
         for (Minion minion : play.getMinionList()) {
             if (minion.getHp() <= minion.getHpMax() - Integer.parseInt(settingManager.getSetting("clwEndHpLoss").getValue()) &&

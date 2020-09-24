@@ -1,4 +1,4 @@
-package nergaltool;
+package nergaltool.action.base;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.action.base.MyAction;
