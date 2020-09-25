@@ -33,8 +33,9 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
     private final SettingManager settingManager = SettingManager.getInstance();
     private final MyTriggerManager myTriggerManager = MyTriggerManager.getInstance();
     private final MyCommandTriggerManager myCommandTriggerManager = MyCommandTriggerManager.getInstance();
-    private Timer timer;
-    private List<String> mobs = new ArrayList<>();
+    private Timer combatTimer;
+    private boolean needinit;
+    private final List<String> mobs = new ArrayList<>();
 
     @Override
     public void loadPlugin() {
@@ -45,6 +46,12 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }
+        new Timer().schedule(new TimerTask() {//each 5 minute
+            @Override
+            public void run() {
+                needinit = true;
+            }
+        },0,5*60*1000);
         myCLientGUI = getClientGUI();
         myCLientGUI.printText(getName(), TextUtil.colorText("--- Loading " + getName() + " ---\n", TextUtil.GREEN));
 
@@ -227,8 +234,8 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                 (batClientPlugin, matcher) -> {
                     if (!play.isCombat()) {
                         play.setCombat(true);
-                        timer = new Timer();
-                        timer.schedule(new TimerTask() {
+                        combatTimer = new Timer();
+                        combatTimer.schedule(new TimerTask() {
                             @Override
                             public void run() {
                                 getClientGUI().doCommand("@scan all");
@@ -242,7 +249,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                 (batClientPlugin, matcher) -> {
                     if (play.isCombat()) {
                         play.setCombat(false);
-                        timer.cancel();
+                        combatTimer.cancel();
                         combatEnd();
                     }
                 }, true, false, false);//Gag one scan
@@ -262,50 +269,43 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                 }, true, false, false);
         //room monster,color code
         myTriggerManager.newTrigger("RoomMonster",
-                "^\u001B\\[1;32m([A-Za-z,'\\s]+)\u001B\\[0m$",
+                "^\u001B\\[1;32m([A-Za-z,'\\s-]+)\u001B\\[0m$",
                 (batClientPlugin, matcher) -> mobs.add(matcher.group(1)), true, false, true);
     }
 
-
+    /**
+     * set command trigger
+     */
     private void loadCommandTrigger() {
         //debug info
         myCommandTriggerManager.newTrigger("nergaltoolDebug", "^nergaltool debug ([a-z]+)$",
                 (batClientPlugin, matcher) -> {
                     switch (matcher.group(1)) {
-                        case "setting":
-                            myCLientGUI.printText(Global.PLUGIN_NAME, settingManager.toString() + "\n");
-                            break;
                         case "minion":
-                            myCLientGUI.printText(Global.PLUGIN_NAME, minionList.toString() + "\n");
+                            StringBuilder minionInfo = new StringBuilder("Minions: ");
+                            for (Minion name : minionList) {
+                                minionInfo.append("\n");
+                                minionInfo.append(name.toString());
+                            }
+                            myCLientGUI.printText(Global.PLUGIN_NAME, minionInfo.toString() + "\n");
                             break;
                         case "play":
                             myCLientGUI.printText(Global.PLUGIN_NAME, play.toString() + "\n");
                             break;
                     }
-                }, true, true);
-        //clw all minions
-        myCommandTriggerManager.newTrigger("nergaltoolClw", "^nergaltool clw$",
-                (batClientPlugin, matcher) -> {
-                    myCLientGUI.printText(getName(), "clw start\n");
-                    ClwAction clwAction = new ClwAction(myCLientGUI);
-                    clwAction.run();
-                    myCLientGUI.printText(getName(), "clw end\n");
-                }, true, true);
+                }, true, true,false);
         //reply
         myCommandTriggerManager.newTrigger("nergaltoolReply", "^nergaltool reply$",
-                (batClientPlugin, matcher) -> reply(), true, true);
-        //init
-        myCommandTriggerManager.newTrigger("nergaltoolInit", "^nergaltool init$",
-                (batClientPlugin, matcher) -> {
-                    SpellUtil.hvSp = SpellUtil.rpSp = SpellUtil.foodSp = SpellUtil.clwSp = 0;
-                    new InitStatsAction(myCLientGUI).run();
-                }, true, true);
+                (batClientPlugin, matcher) -> reply(), true, true,false);
         //set show
         myCommandTriggerManager.newTrigger("nergaltoolSet", "^nergaltool set ?([a-zA-Z]+)? ?([a-zA-Z0-9\\s]+)?",
-                (batClientPlugin, matcher) -> settingManager.interpreter(myCLientGUI, matcher), true, true);
-        //set show
+                (batClientPlugin, matcher) -> settingManager.interpreter(myCLientGUI, matcher), true, true,false);
+        //show all monster
         myCommandTriggerManager.newTrigger("nergaltoolMonster", "^nergaltool monster",
-                (batClientPlugin, matcher) -> MonsterInformation.interpreter(myCLientGUI, matcher), true, true);
+                (batClientPlugin, matcher) -> MonsterInformation.interpreter(myCLientGUI, matcher), true, true,false);
+        //remove monster index
+        myCommandTriggerManager.newTrigger("nergaltoolMonsterRemove", "^nergaltool monster remove ([0-9]+)",
+                (batClientPlugin, matcher) -> MonsterInformation.interpreter(myCLientGUI, matcher), true, true,false);
         //harvest
         myCommandTriggerManager.newTrigger("nergaltoolharv", "^nergaltool harvest$",
                 (batClientPlugin, matcher) -> {
@@ -326,7 +326,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                         getClientGUI().doCommand("@bell " + settingManager.getSetting("playName").getValue());
                         getClientGUI().printText(Global.GENERIC, TextUtil.colorText("no harvest here\n", TextUtil.RED));
                     }
-                }, true, true);
+                }, true, true,false);
     }
 
     /**
@@ -334,23 +334,25 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
      */
     private void reply() {
         MyAction start = new ReplyAction(myCLientGUI);
+        MyAction init = new MyAction(myCLientGUI);
+        if (SpellUtil.foodSp == 0 || needinit) {
+            SpellUtil.hvSp = SpellUtil.rpSp = SpellUtil.foodSp = SpellUtil.clwSp = 0;
+            needinit =false;
+            init = new InitStatsAction(myCLientGUI);
+        }
         MyAction food = new FoodAction(myCLientGUI);
         MyAction clw = new ClwAction(myCLientGUI);
         MyAction foodPotentia = new FoodPotentiaAction(myCLientGUI);
         MyAction spr = new SprAction(myCLientGUI, Math.max(SpellUtil.hvSp, SpellUtil.rpSp));
         MyAction bell = new BellAction(myCLientGUI);
 
-        start.decorate(food);
+        start.decorate(init);
+        init.decorate(food);
         food.decorate(clw);
         clw.decorate(foodPotentia);
         foodPotentia.decorate(spr);
         spr.decorate(bell);
 
-        if (SpellUtil.foodSp == 0) {
-            MyAction init = new InitStatsAction(myCLientGUI);
-            start.decorate(init);
-            init.decorate(food);
-        }
 
         start.run();
     }

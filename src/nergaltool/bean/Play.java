@@ -145,8 +145,8 @@ public class Play {
                 ", epMax=" + epMax +
                 ", vitae=" + vitae +
                 ", potentia=" + potentia +
-                ", lastHibernatingTime=" + lastHibernatingTime +
-                ", lastSleepTime=" + lastSleepTime +
+                ", lastHibernatingTime=" + ((System.currentTimeMillis() - lastHibernatingTime) / 1000) +
+                ", lastSleepTime=" + ((System.currentTimeMillis() - lastSleepTime) / 1000) +
                 '}';
     }
 }
