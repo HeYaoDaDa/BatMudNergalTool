@@ -3,16 +3,13 @@ package nergaltool.trigger.manager;
 
 import com.mythicscape.batclient.interfaces.BatClientPlugin;
 import nergaltool.trigger.bean.MyTrigger;
-import nergaltool.trigger.bean.TriggerBody;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 
 /**
  * match play input Trigger Manager
  */
-public class MyCommandTriggerManager extends MyBaseTriggerManager{
+public class MyCommandTriggerManager extends MyBaseTriggerManager {
     //Singleton,instance
     private static final MyCommandTriggerManager myCommandTriggerManager = new MyCommandTriggerManager();
 
@@ -32,7 +29,6 @@ public class MyCommandTriggerManager extends MyBaseTriggerManager{
     public synchronized String process(BatClientPlugin batClientPlugin, String content) {
         boolean isMatch = false;
         for (MyTrigger myTrigger : myTriggerList) {
-            //continue no action trigger
             if (!myTrigger.isAction()) continue;
             Matcher matcher = myTrigger.matcher(content);
             if (matcher.find()) {
