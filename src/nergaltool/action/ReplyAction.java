@@ -1,9 +1,8 @@
 package nergaltool.action;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
+import nergaltool.PluginMain;
 import nergaltool.action.base.MyAction;
-import nergaltool.utils.Global;
-import nergaltool.utils.SpellUtil;
 import nergaltool.utils.TextUtil;
 
 /**
@@ -16,7 +15,7 @@ public class ReplyAction extends MyAction {
 
     @Override
     public void run() {
-        clientGUI.printText(Global.GENERIC, TextUtil.colorText("Start Reply Action\n",
+        clientGUI.printText(PluginMain.GENERIC, TextUtil.colorText("Start Reply Action\n",
                 TextUtil.GREEN));
         super.run();
     }

@@ -1,7 +1,6 @@
 package nergaltool.trigger.manager;
 
 
-import com.mythicscape.batclient.interfaces.BatClientPlugin;
 import nergaltool.trigger.bean.MyTrigger;
 
 import java.util.regex.Matcher;
@@ -9,7 +8,7 @@ import java.util.regex.Matcher;
 /**
  * match play input Trigger Manager
  */
-public class MyCommandTriggerManager extends MyBaseTriggerManager {
+public class MyCommandTriggerManager extends MyBaseTriggerManager<String> {
     //Singleton,instance
     private static final MyCommandTriggerManager myCommandTriggerManager = new MyCommandTriggerManager();
 
@@ -19,33 +18,11 @@ public class MyCommandTriggerManager extends MyBaseTriggerManager {
         return myCommandTriggerManager;
     }
 
-    /**
-     * process all trigger match and run
-     *
-     * @param batClientPlugin context
-     * @param content         command content
-     * @return content
-     */
-    public synchronized String process(BatClientPlugin batClientPlugin, String content) {
-        boolean isMatch = false;
-        for (MyTrigger myTrigger : myTriggerList) {
-            if (!myTrigger.isAction()) continue;
-            Matcher matcher = myTrigger.matcher(content);
-            if (matcher.find()) {
-                isMatch = true;
-                myTrigger.getTriggerBody().body(batClientPlugin, matcher);
-                //if is gag clear text
-                if (myTrigger.isGag()) {
-                    content = "";
-                    break;
-                }
-            }
-        }
-        if (isMatch) {
-            return content;
-        } else {
-            //if no match return null
-            return null;
-        }
+    protected Matcher matcher(String content, MyTrigger myTrigger) {
+        return myTrigger.matcher(content);
+    }
+
+    protected String setGagContent(String content) {
+        return "";
     }
 }

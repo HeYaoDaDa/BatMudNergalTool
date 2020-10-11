@@ -1,6 +1,5 @@
 package nergaltool.action.base;
 
-import com.mythicscape.batclient.interfaces.BatClientPlugin;
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.bean.Play;
 import nergaltool.setting.SettingManager;
@@ -47,7 +46,7 @@ public class MyAction {
      */
     protected void offTrigger(List<String> triggerList){
         for (String s:triggerList){
-            myTriggerManager.getMyTrigger(s).setAction(false);
+            myTriggerManager.findTriggerByName(s).setAction(false);
         }
     }
 }

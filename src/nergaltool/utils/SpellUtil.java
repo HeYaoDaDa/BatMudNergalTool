@@ -27,7 +27,7 @@ public class SpellUtil {
         clientGUI.doCommand("@cast nourish enthralled at "+ traget + " consume " + size + " " + energy);
     }
     public static void bell(ClientGUI clientGUI){
-        clientGUI.doCommand("@bell " + SettingManager.getInstance().getSetting("playName").getValue());
+        clientGUI.doCommand("@bell " + SettingManager.getInstance().findSettingByName("playName").getValue());
     }
     public static void harvest(ClientGUI clientGUI,String monster){
         clientGUI.doCommand("@cast Harvest vitae at " + monster);

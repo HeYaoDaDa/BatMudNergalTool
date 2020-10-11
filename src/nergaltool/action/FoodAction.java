@@ -11,13 +11,14 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static nergaltool.utils.Global.FOOD_CD;
-import static nergaltool.utils.Global.PLUGIN_NAME;
+import static nergaltool.PluginMain.PLUGIN_NAME;
 
 /**
  * food heal action
  */
 public class FoodAction extends MyAction {
+    public static final int FOOD_CD = 3 * 60 * 1000;
+
     public FoodAction(ClientGUI clientGUI) {
         super(clientGUI);
     }
@@ -27,7 +28,7 @@ public class FoodAction extends MyAction {
         Minion target = getTraget();
 
         if (target != null) {
-            if (play.getVitae() < Integer.parseInt(settingManager.getSetting("foodMaxSize").getValue())) {
+            if (play.getVitae() < Integer.parseInt(settingManager.findSettingByName("foodMaxSize").getValue())) {
                 clientGUI.printText(PLUGIN_NAME, TextUtil.colorText("!!!!!YOU VITAE IS NO ENOUGH!!!!!\n", TextUtil.RED));
                 super.run();
             } else if (play.getSp() < SpellUtil.foodSp) {//sp empty
@@ -49,9 +50,9 @@ public class FoodAction extends MyAction {
     private Minion getTraget() {
         Minion target = null;
         for (Minion minion : play.getMinionList()) {
-            if (minion.getHp() <= minion.getHpMax() - Integer.parseInt(settingManager.getSetting("foodHpLoss").getValue())
+            if (minion.getHp() <= minion.getHpMax() - Integer.parseInt(settingManager.findSettingByName("foodHpLoss").getValue())
                     && System.currentTimeMillis() - minion.getLastFoodTime() > FOOD_CD
-                    && !settingManager.getSetting("foodBlackList").getListValue().contains(minion.getName())
+                    && !settingManager.findSettingByName("foodBlackList").getListValue().contains(minion.getName())
             ) {
                 target = minion;
             }
@@ -76,20 +77,20 @@ public class FoodAction extends MyAction {
     private void startFood(Minion target) {
         SpellUtil.food(clientGUI,
                 target.getName(),
-                Math.min((target.getHpMax() - target.getHp()) / Integer.parseInt(settingManager.getSetting("eachVitaeHpr").getValue()),
-                        Integer.parseInt(settingManager.getSetting("foodMaxSize").getValue())),
+                Math.min((target.getHpMax() - target.getHp()) / Integer.parseInt(settingManager.findSettingByName("eachVitaeHpr").getValue()),
+                        Integer.parseInt(settingManager.findSettingByName("foodMaxSize").getValue())),
                 "vitae");
         List<String> triggerList = new ArrayList<>();
         triggerList.add("NotSpFoodAction");
         triggerList.add("SpellEndFoodAction");
         triggerList.add("Movement");
-        myTriggerManager.newTrigger("NotSpFoodAction",
+        myTriggerManager.addTrigger("NotSpFoodAction",
                 "^You do not have enough spell points to cast the spell",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
                     startSpr();
                 }, true, false, false);
-        myTriggerManager.newTrigger("SpellEndFoodAction",
+        myTriggerManager.addTrigger("SpellEndFoodAction",
                 "^You are done with the chant.",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
@@ -100,7 +101,7 @@ public class FoodAction extends MyAction {
                         }
                     }, 500);
                 }, true, false, false);
-        myTriggerManager.newTrigger("Movement",
+        myTriggerManager.addTrigger("Movement",
                 "^Your movement prevents you from casting the spell.",
                 (batClientPlugin, matcher) ->
                         offTrigger(triggerList),

@@ -9,7 +9,6 @@ import nergaltool.bean.Play;
 import nergaltool.setting.SettingManager;
 import nergaltool.trigger.manager.MyCommandTriggerManager;
 import nergaltool.trigger.manager.MyTriggerManager;
-import nergaltool.utils.Global;
 import nergaltool.utils.MonsterInformation;
 import nergaltool.utils.SpellUtil;
 import nergaltool.utils.TextUtil;
@@ -26,7 +25,10 @@ import java.util.TimerTask;
 /**
  * plugin main
  */
-public class NergalToolPlugin extends BatClientPlugin implements BatClientPluginTrigger, BatClientPluginCommandTrigger, BatClientPluginUtil {
+public class PluginMain extends BatClientPlugin implements BatClientPluginTrigger, BatClientPluginCommandTrigger, BatClientPluginUtil {
+    public static final String PLUGIN_NAME = "NergalTool";
+    public static final String GENERIC = "Generic";
+
     private ClientGUI myCLientGUI;
     private final Play play = Play.getInstance();
     private final List<Minion> minionList = play.getMinionList();
@@ -51,7 +53,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
             public void run() {
                 needinit = true;
             }
-        },0,5*60*1000);
+        }, 0, 5 * 60 * 1000);
         myCLientGUI = getClientGUI();
         myCLientGUI.printText(getName(), TextUtil.colorText("--- Loading " + getName() + " ---\n", TextUtil.GREEN));
 
@@ -61,17 +63,17 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
 
     @Override
     public String getName() {
-        return Global.PLUGIN_NAME;
+        return PLUGIN_NAME;
     }
 
     @Override
     public String trigger(String s) {
-        return myCommandTriggerManager.process(this, s);
+        return myCommandTriggerManager.processAllTrigger(this, s);
     }
 
     @Override
     public ParsedResult trigger(ParsedResult parsedResult) {
-        return myTriggerManager.process(this, parsedResult);
+        return myTriggerManager.processAllTrigger(this, parsedResult);
     }
 
     @Override
@@ -88,13 +90,13 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
      * set Trigger
      */
     private void loadTrigger() {
-        myTriggerManager.newTrigger("NergalScoreMINIONS",
+        myTriggerManager.addTrigger("NergalScoreMINIONS",
                 " #\"\"\"\"_MINIONS_ \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"###\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"######\"\"\" ",
                 (batClientPlugin, matcher) ->
                         minionList.clear()
                 , true, false, false);
         //nergal score,add minion to minionList
-        myTriggerManager.newTrigger("NergalScoreMinion",
+        myTriggerManager.addTrigger("NergalScoreMinion",
                 " #\\s+([A-Za-z]+(\\s[a-z]+)*)\\s+" +
                         "HP: ([0-9]+) \\(([0-9]+)\\)\\s+" +
                         "SP: ([0-9]+) \\(([0-9]+)\\)\\s+" +
@@ -126,19 +128,19 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                 }
                 , true, false, false);
         //nergal score,update Vitae
-        myTriggerManager.newTrigger("NergalScoreVitae",
+        myTriggerManager.addTrigger("NergalScoreVitae",
                 "You have harvested ([0-9]+) vitae to empower you.",
                 (batClientPlugin, matcher) ->
                         play.setVitae(Integer.parseInt(matcher.group(1)))
                 , true, false, false);
         //nergal score,update Pontentia
-        myTriggerManager.newTrigger("NergalScorePotentia",
+        myTriggerManager.addTrigger("NergalScorePotentia",
                 "You have reaped ([0-9]+) potentia to empower you.",
                 (batClientPlugin, matcher) ->
                         play.setPotentia(Integer.parseInt(matcher.group(1)))
                 , true, false, false);
         //Sc,update paly stats
-        myTriggerManager.newTrigger("PlaySc",
+        myTriggerManager.addTrigger("PlaySc",
                 "hp: ([0-9]+) \\(([0-9]+)\\) \\[(\\S[0-9]+)*\\] " +
                         "sp: ([0-9]+) \\(([0-9]+)\\) \\[(\\S[0-9]+)*\\] " +
                         "ep: ([0-9]+) \\(([0-9]+)\\) \\[(\\S[0-9]+)*\\]",
@@ -151,7 +153,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                     play.setEpMax(Integer.parseInt(matcher.group(8)));
                 }, true, false, false);
         //nergal sc,update play enemy
-        myTriggerManager.newTrigger("NergalScVp",
+        myTriggerManager.addTrigger("NergalScVp",
                 "::..:. \\[Vitae: ([0-9]+)/1000  Potentia: ([0-9]+)/1000,",
                 (batClientPlugin, matcher) -> {
                     play.setVitae(Integer.parseInt(matcher.group(1)));
@@ -161,7 +163,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                     }
                 }, true, false, false);
         //nergal sc,update minion food time
-        myTriggerManager.newTrigger("NergalScFoodTime",
+        myTriggerManager.addTrigger("NergalScFoodTime",
                 "::..:. \\[Invigorated: ([A-Za-z]+(\\s[a-z]+)*) \\(([0-9]+)s\\)," +
                         " ([A-Za-z]+(\\s[a-z]+)*) \\(([0-9]+)s\\)," +
                         " ([A-Za-z]+(\\s[a-z]+)*) \\(([0-9]+)s\\)\\]",
@@ -180,7 +182,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                     }
                 }, true, false, false);
         //minion XX sc,update minion stats
-        myTriggerManager.newTrigger("MinionSc",
+        myTriggerManager.addTrigger("MinionSc",
                 "::..:. ([A-Za-z]+(\\s[a-z]+)*) " +
                         "\\[Hp: ([0-9]+) \\(([0-9]+)\\)( \\(\\S[0-9]+\\))*, " +
                         "Sp: ([0-9]+) \\(([0-9]+)\\)( \\(\\S[0-9]+\\))*, " +
@@ -209,17 +211,17 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                             Integer.parseInt(matcher.group(10))));
                 }, true, false, false);
         //hibernating end,update play last hibernating time
-        myTriggerManager.newTrigger("HibernatingEnd",
+        myTriggerManager.addTrigger("HibernatingEnd",
                 "^As the roots subside releasing you from their embrace you feel invigorated.",
                 (batClientPlugin, matcher) ->
                         play.setLastHibernatingTime(System.currentTimeMillis()), true, false, false);
         //sleep awaken,update play last sleep time
-        myTriggerManager.newTrigger("SleepEnd",
+        myTriggerManager.addTrigger("SleepEnd",
                 "^You awaken from your short rest, and feel slightly better.",
                 (batClientPlugin, matcher) ->
                         play.setLastSleepTime(System.currentTimeMillis()), true, false, false);
         //food succes,update minion food time
-        myTriggerManager.newTrigger("FoodSuccess",
+        myTriggerManager.addTrigger("FoodSuccess",
                 "You raise your hand towards ([A-Za-z]+(\\s[a-z]+)*) and faint line of ethereal energy",
                 (batClientPlugin, matcher) -> {
                     for (Minion minion : minionList) {
@@ -229,7 +231,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                     }
                 }, true, false, false);
         //Combat and Scan is a pair
-        myTriggerManager.newTrigger("Combat",
+        myTriggerManager.addTrigger("Combat",
                 "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\* Round",
                 (batClientPlugin, matcher) -> {
                     if (!play.isCombat()) {
@@ -244,7 +246,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                     }
                 }, true, false, false);
         //Combat end
-        myTriggerManager.newTrigger("Scan",
+        myTriggerManager.addTrigger("Scan",
                 "You are not in combat right now.",
                 (batClientPlugin, matcher) -> {
                     if (play.isCombat()) {
@@ -254,7 +256,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                     }
                 }, true, false, false);//Gag one scan
         //move to new room
-        myTriggerManager.newTrigger("NewRoom", "^(Obvious exits are)|^(Obvious exit is)|(Exits?:  )",
+        myTriggerManager.addTrigger("NewRoom", "^(Obvious exits are)|^(Obvious exit is)|(Exits?:  )",
                 (batClientPlugin, matcher) -> {
                     mobs.clear();
                     new Timer().schedule(new TimerTask() {
@@ -268,7 +270,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                     }, 50);
                 }, true, false, false);
         //room monster,color code
-        myTriggerManager.newTrigger("RoomMonster",
+        myTriggerManager.addTrigger("RoomMonster",
                 "^\u001B\\[1;32m([A-Za-z,'\\s-]+)\u001B\\[0m$",
                 (batClientPlugin, matcher) -> mobs.add(matcher.group(1)), true, false, true);
     }
@@ -278,7 +280,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
      */
     private void loadCommandTrigger() {
         //debug info
-        myCommandTriggerManager.newTrigger("nergaltoolDebug", "^nergaltool debug ([a-z]+)$",
+        myCommandTriggerManager.addTrigger("nergaltoolDebug", "^nergaltool debug ([a-z]+)$",
                 (batClientPlugin, matcher) -> {
                     switch (matcher.group(1)) {
                         case "minion":
@@ -287,27 +289,27 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                                 minionInfo.append("\n");
                                 minionInfo.append(name.toString());
                             }
-                            myCLientGUI.printText(Global.PLUGIN_NAME, minionInfo.toString() + "\n");
+                            myCLientGUI.printText(PLUGIN_NAME, minionInfo.toString() + "\n");
                             break;
                         case "play":
-                            myCLientGUI.printText(Global.PLUGIN_NAME, play.toString() + "\n");
+                            myCLientGUI.printText(PLUGIN_NAME, play.toString() + "\n");
                             break;
                     }
-                }, true, true,false);
+                }, true, true, false);
         //reply
-        myCommandTriggerManager.newTrigger("nergaltoolReply", "^nergaltool reply$",
-                (batClientPlugin, matcher) -> reply(), true, true,false);
+        myCommandTriggerManager.addTrigger("nergaltoolReply", "^nergaltool reply$",
+                (batClientPlugin, matcher) -> reply(), true, true, false);
         //set show
-        myCommandTriggerManager.newTrigger("nergaltoolSet", "^nergaltool set ?([a-zA-Z]+)? ?([a-zA-Z0-9\\s]+)?",
-                (batClientPlugin, matcher) -> settingManager.interpreter(myCLientGUI, matcher), true, true,false);
+        myCommandTriggerManager.addTrigger("nergaltoolSet", "^nergaltool set ?([a-zA-Z]+)? ?([a-zA-Z0-9\\s]+)?",
+                (batClientPlugin, matcher) -> settingManager.interpreter(myCLientGUI, matcher), true, true, false);
         //show all monster
-        myCommandTriggerManager.newTrigger("nergaltoolMonster", "^nergaltool monster",
-                (batClientPlugin, matcher) -> MonsterInformation.interpreter(myCLientGUI, matcher), true, true,false);
+        myCommandTriggerManager.addTrigger("nergaltoolMonster", "^nergaltool monster",
+                (batClientPlugin, matcher) -> MonsterInformation.interpreter(myCLientGUI, matcher), true, true, false);
         //remove monster index
-        myCommandTriggerManager.newTrigger("nergaltoolMonsterRemove", "^nergaltool monster remove ([0-9]+)",
-                (batClientPlugin, matcher) -> MonsterInformation.interpreter(myCLientGUI, matcher), true, true,false);
+        myCommandTriggerManager.addTrigger("nergaltoolMonsterRemove", "^nergaltool monster remove ([0-9]+)",
+                (batClientPlugin, matcher) -> MonsterInformation.interpreter(myCLientGUI, matcher), true, true, false);
         //harvest
-        myCommandTriggerManager.newTrigger("nergaltoolharv", "^nergaltool harvest$",
+        myCommandTriggerManager.addTrigger("nergaltoolharv", "^nergaltool harvest$",
                 (batClientPlugin, matcher) -> {
                     if (mobs.size() >= 1) {
                         boolean isTwo = false;
@@ -323,10 +325,10 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
                         MyAction myAction = new HarvestAction(myCLientGUI, monsterName);
                         myAction.run();
                     } else {
-                        getClientGUI().doCommand("@bell " + settingManager.getSetting("playName").getValue());
-                        getClientGUI().printText(Global.GENERIC, TextUtil.colorText("no harvest here\n", TextUtil.RED));
+                        getClientGUI().doCommand("@bell " + settingManager.findSettingByName("playName").getValue());
+                        getClientGUI().printText(GENERIC, TextUtil.colorText("no harvest here\n", TextUtil.RED));
                     }
-                }, true, true,false);
+                }, true, true, false);
     }
 
     /**
@@ -337,7 +339,7 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
         MyAction init = new MyAction(myCLientGUI);
         if (SpellUtil.foodSp == 0 || needinit) {
             SpellUtil.hvSp = SpellUtil.rpSp = SpellUtil.foodSp = SpellUtil.clwSp = 0;
-            needinit =false;
+            needinit = false;
             init = new InitStatsAction(myCLientGUI);
         }
         MyAction food = new FoodAction(myCLientGUI);
@@ -364,12 +366,12 @@ public class NergalToolPlugin extends BatClientPlugin implements BatClientPlugin
         boolean needHeal = false;
         int maxSp = Math.max(SpellUtil.hvSp, SpellUtil.rpSp);
         for (Minion minion : minionList) {
-            if (minion.getHp() <= minion.getHpMax() * Integer.parseInt(settingManager.getSetting("battleEndStartHealHpRate").getValue()) * 0.01) {
+            if (minion.getHp() <= minion.getHpMax() * Integer.parseInt(settingManager.findSettingByName("battleEndStartHealHpRate").getValue()) * 0.01) {
                 needHeal = true;
                 break;
             }
         }
-        if (needHeal && Boolean.parseBoolean(settingManager.getSetting("battleEndHeal").getValue())) {
+        if (needHeal && Boolean.parseBoolean(settingManager.findSettingByName("battleEndHeal").getValue())) {
             reply();
         } else {
             if (play.getSp() < maxSp) {

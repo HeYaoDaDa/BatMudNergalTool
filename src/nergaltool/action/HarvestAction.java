@@ -2,7 +2,6 @@ package nergaltool.action;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.action.base.MyAction;
-import nergaltool.bean.Play;
 import nergaltool.utils.SpellUtil;
 import nergaltool.utils.TextUtil;
 
@@ -11,7 +10,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static nergaltool.utils.Global.GENERIC;
+import static nergaltool.PluginMain.GENERIC;
 
 public class HarvestAction extends MyAction {
     private final String monster;
@@ -42,7 +41,7 @@ public class HarvestAction extends MyAction {
         triggerList.add("NotSpClwAction");
         triggerList.add("SpellEndClwAction");
         triggerList.add("Movement");
-        myTriggerManager.newTrigger("NoTraget",
+        myTriggerManager.addTrigger("NoTraget",
                 "Cast (Reap Potentia)|(Harvest Vitae) at what?",
                 (batClientPlugin, matcher) -> {
                     exit.cancel();
@@ -52,13 +51,13 @@ public class HarvestAction extends MyAction {
                     super.run();
                 },
                 true, false,false);
-        myTriggerManager.newTrigger("NotSpClwAction",
+        myTriggerManager.addTrigger("NotSpClwAction",
                 "^You do not have enough spell points to cast the spell",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
                     startSpr();
                 }, true, false, false);
-        myTriggerManager.newTrigger("SpellEndClwAction",
+        myTriggerManager.addTrigger("SpellEndClwAction",
                 "^You are done with the chant.",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
@@ -74,7 +73,7 @@ public class HarvestAction extends MyAction {
                         }
                     }, 1000);
                 }, true, false, false);
-        myTriggerManager.newTrigger("Movement",
+        myTriggerManager.addTrigger("Movement",
                 "^Your movement prevents you from casting the spell.",
                 (batClientPlugin, matcher) ->
                         offTrigger(triggerList),

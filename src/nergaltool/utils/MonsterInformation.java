@@ -1,6 +1,7 @@
 package nergaltool.utils;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
+import nergaltool.PluginMain;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -19,14 +20,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * autom harvest monster information manager
  */
 public class MonsterInformation {
     public static List<String> monsterList = new ArrayList<>();
-    private static final String monsterInfoXmlFile = File.separator + "conf" + File.separator + Global.PLUGIN_NAME+File.separator+"monsters.xml";
+    private static final String monsterInfoXmlFile = File.separator + "conf" + File.separator + PluginMain.PLUGIN_NAME+File.separator+"monsters.xml";
 
     /**
      * save to xml
@@ -88,7 +88,7 @@ public class MonsterInformation {
 
     public static void interpreter(ClientGUI clientGUI, Matcher matcher){
 //        if (matcher.group(1)==null){
-            clientGUI.printText(Global.GENERIC,printMonsters());
+            clientGUI.printText(PluginMain.GENERIC,printMonsters());
 //        }else {
 //            Pattern pattern = Pattern.compile("^[\\d]*$");
 //            if (pattern.matcher(matcher.group(1)).matches()) {

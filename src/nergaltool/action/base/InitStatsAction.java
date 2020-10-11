@@ -1,13 +1,12 @@
 package nergaltool.action.base;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
-import nergaltool.action.base.MyAction;
 import nergaltool.trigger.bean.MyTrigger;
 import nergaltool.trigger.manager.MyTriggerManager;
 import nergaltool.utils.SpellUtil;
 import nergaltool.utils.TextUtil;
 
-import static nergaltool.utils.Global.PLUGIN_NAME;
+import static nergaltool.PluginMain.PLUGIN_NAME;
 
 public class InitStatsAction extends MyAction {
     public InitStatsAction(ClientGUI clientGUI) {
@@ -15,9 +14,9 @@ public class InitStatsAction extends MyAction {
     }
     @Override
     public void run() {
-        MyTrigger spellSp = myTriggerManager.getMyTrigger("SpellSp");
+        MyTrigger spellSp = myTriggerManager.findTriggerByName("SpellSp");
         if (spellSp ==null||spellSp.isAction()){
-            myTriggerManager.newTrigger("SpellSp",
+            myTriggerManager.addTrigger("SpellSp",
                     "^Spell point cost: ([0-9]+)",
                     (batClientPlugin, matcher) -> {
                         if (SpellUtil.hvSp == 0) {
@@ -30,7 +29,7 @@ public class InitStatsAction extends MyAction {
                             SpellUtil.clwSp = Integer.parseInt(matcher.group(1));
                             clientGUI.printText(PLUGIN_NAME, "Now clw SP cost is " + TextUtil.colorText(String.valueOf(SpellUtil.clwSp), TextUtil.RED) + "\n");
                         } else if (SpellUtil.foodSp == 0) {
-                            MyTriggerManager.getInstance().getMyTrigger("SpellSp").setAction(false);
+                            MyTriggerManager.getInstance().findTriggerByName("SpellSp").setAction(false);
                             SpellUtil.foodSp = Integer.parseInt(matcher.group(1));
                             clientGUI.printText(PLUGIN_NAME, "Now food SP cost is " + TextUtil.colorText(String.valueOf(SpellUtil.foodSp), TextUtil.RED) + "\n");
                             //exit begin next action

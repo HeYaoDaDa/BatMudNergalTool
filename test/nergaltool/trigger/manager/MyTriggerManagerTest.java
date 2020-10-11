@@ -12,50 +12,50 @@ class MyTriggerManagerTest {
     MyTriggerManager instance = new MyTriggerManager();
 
     @Test
-    void process() {
-        instance.newTrigger("test", "test", (batClientPlugin, matcher) -> {
+    void testProcessAllTrigger() {
+        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, true, false, false);
-        ParsedResult parsedResult = instance.process(null, new ParsedResult("test"));
+        ParsedResult parsedResult = instance.processAllTrigger(null, new ParsedResult("test"));
         assertEquals("test", parsedResult.getOriginalText());
     }
 
     @Test
-    void processNoAction() {
-        instance.newTrigger("test", "test", (batClientPlugin, matcher) -> {
+    void testProcessAllTriggerNoAction() {
+        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, false, false, false);
-        ParsedResult parsedResult = instance.process(null, new ParsedResult("test"));
+        ParsedResult parsedResult = instance.processAllTrigger(null, new ParsedResult("test"));
         assertNull(parsedResult);
     }
 
     @Test
-    void processNoActionButGag() {
-        instance.newTrigger("test", "test", (batClientPlugin, matcher) -> {
+    void testProcessAllTriggerNoActionButGag() {
+        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, false, true, false);
-        ParsedResult parsedResult = instance.process(null, new ParsedResult("test"));
+        ParsedResult parsedResult = instance.processAllTrigger(null, new ParsedResult("test"));
         assertNull(parsedResult);
     }
 
     @Test
-    void processGag() {
-        instance.newTrigger("test", "test", (batClientPlugin, matcher) -> {
+    void testProcessAllTriggerGag() {
+        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, true, true, false);
-        ParsedResult parsedResult = instance.process(null, new ParsedResult("test"));
+        ParsedResult parsedResult = instance.processAllTrigger(null, new ParsedResult("test"));
         assertEquals("", parsedResult.getOriginalText());
     }
 
     @Test
-    void processExpand() {
-        instance.newTrigger("test", "expandtest", (batClientPlugin, matcher) -> {
+    void testProcessAllTriggerExpand() {
+        instance.addTrigger("test", "expandtest", (batClientPlugin, matcher) -> {
         }, true, false, true);
-        ParsedResult parsedResult = instance.process(null, new ParsedResult("expandtest", "test", new ArrayList<>()));
+        ParsedResult parsedResult = instance.processAllTrigger(null, new ParsedResult("expandtest", "test", new ArrayList<>()));
         assertEquals("expandtest", parsedResult.getOriginalText());
     }
 
     @Test
-    void getMyTrigger() {
-        instance.newTrigger("test", "test", (batClientPlugin, matcher) -> {
+    void testFindTriggerByName() {
+        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, true, false, false);
-        assertEquals("test", instance.getMyTrigger("test").getName());
-        assertNull(instance.getMyTrigger("Notest"));
+        assertEquals("test", instance.findTriggerByName("test").getName());
+        assertNull(instance.findTriggerByName("Notest"));
     }
 }

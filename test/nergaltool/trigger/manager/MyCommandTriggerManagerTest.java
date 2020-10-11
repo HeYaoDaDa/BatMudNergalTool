@@ -9,42 +9,42 @@ class MyCommandTriggerManagerTest {
     MyCommandTriggerManager instance = new MyCommandTriggerManager();
 
     @Test
-    void process() {
-        instance.newTrigger("test", "test", (batClientPlugin, matcher) -> {
+    void testProcessAllTrigger() {
+        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, true, false, false);
-        String result = instance.process(null, "test");
+        String result = instance.processAllTrigger(null, "test");
         assertEquals("test", result);
     }
 
     @Test
-    void processNoAction() {
-        instance.newTrigger("test", "test", (batClientPlugin, matcher) -> {
+    void testProcessAllTriggerNoAction() {
+        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, false, false, false);
-        String result = instance.process(null, "test");
+        String result = instance.processAllTrigger(null, "test");
         assertNull(result);
     }
 
     @Test
-    void processNoActionButGag() {
-        instance.newTrigger("test", "test", (batClientPlugin, matcher) -> {
+    void testProcessAllTriggerNoActionButGag() {
+        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, false, true, false);
-        String result = instance.process(null, "test");
+        String result = instance.processAllTrigger(null, "test");
         assertNull(result);
     }
 
     @Test
-    void processGag() {
-        instance.newTrigger("test", "test", (batClientPlugin, matcher) -> {
+    void testProcessAllTriggerGag() {
+        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, true, true, false);
-        String result = instance.process(null, "test");
+        String result = instance.processAllTrigger(null, "test");
         assertEquals("", result);
     }
 
     @Test
-    void getMyTrigger() {
-        instance.newTrigger("test", "test", (batClientPlugin, matcher) -> {
+    void testFindTriggerByName() {
+        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, true, false, false);
-        assertEquals("test", instance.getMyTrigger("test").getName());
-        assertNull(instance.getMyTrigger("Notest"));
+        assertEquals("test", instance.findTriggerByName("test").getName());
+        assertNull(instance.findTriggerByName("Notest"));
     }
 }

@@ -1,22 +1,14 @@
 package nergaltool.setting;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
-import nergaltool.utils.Global;
+import nergaltool.PluginMain;
 import nergaltool.utils.TextUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import nergaltool.utils.XmlUtil;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,9 +21,9 @@ import java.util.regex.Matcher;
 public class SettingManager {
     //Singleton,instance
     public static SettingManager settingManager = new SettingManager();
-    private final List<Setting> settingList = new ArrayList<>();
+    private final List<BaseSetting> baseSettingList = new ArrayList<>();
 
-    private final String pluginDir = File.separator + "conf" + File.separator + Global.PLUGIN_NAME;
+    private final String pluginDir = File.separator + "conf" + File.separator + PluginMain.PLUGIN_NAME;
     private final String settingXmlFile = pluginDir + File.separator + "Setting.xml";
 
     //Singleton,private constructor
@@ -51,25 +43,61 @@ public class SettingManager {
      * @param describe describe
      * @param type     type
      */
-    public void newSetting(String name, String value, String describe, SettingType type) {
-        newSetting(new Setting(name, value, describe, type));
+    public void addSetting(String name, String value, String describe, SettingType type) {
+        BaseSetting baseSetting = null;
+        switch (type) {
+            case STRING:
+                baseSetting = new StringSetting(name, value, describe);
+                break;
+            case INT:
+                baseSetting = new NumberSetting(name, value, describe);
+                break;
+            case BOOLEAN:
+                baseSetting = new BooleanSetting(name, value, describe);
+                break;
+            case LIST:
+                baseSetting = new ListSetting(name, value, describe);
+                break;
+        }
+        addSetting(baseSetting);
+    }
+
+    public void addSetting(Node node) {
+        NamedNodeMap namedNodeMap = node.getAttributes();
+        SettingType type = SettingType.valueOf(namedNodeMap.getNamedItem("type").getNodeValue());
+        BaseSetting baseSetting = null;
+        switch (type) {
+            case STRING:
+                baseSetting = new StringSetting(node);
+                break;
+            case INT:
+                baseSetting = new NumberSetting(node);
+                break;
+            case BOOLEAN:
+                baseSetting = new BooleanSetting(node);
+                break;
+            case LIST:
+                baseSetting = new ListSetting(node);
+                break;
+        }
+        addSetting(baseSetting);
     }
 
     /**
      * add setting to list
      *
-     * @param setting new setting
+     * @param baseSetting new setting
      */
-    public void newSetting(Setting setting) {
+    public void addSetting(BaseSetting baseSetting) {
         //find setting is existence
-        Setting oldSetting = getSetting(setting.getName());
-        if (oldSetting != null) {
-            oldSetting.setName(setting.getName());
-            oldSetting.setValue(setting.getValue());
-            oldSetting.setDescribe(setting.getDescribe());
-            oldSetting.setType(setting.getType());
+        BaseSetting oldBaseSetting = findSettingByName(baseSetting.getName());
+        if (oldBaseSetting != null) {
+            oldBaseSetting.setName(baseSetting.getName());
+            oldBaseSetting.setValue(baseSetting.getValue());
+            oldBaseSetting.setDescribe(baseSetting.getDescribe());
+            oldBaseSetting.setType(baseSetting.getType());
         } else {
-            settingList.add(setting);
+            baseSettingList.add(baseSetting);
         }
     }
 
@@ -79,17 +107,17 @@ public class SettingManager {
      * @param name setting name
      * @return setting object
      */
-    public Setting getSetting(String name) {
-        for (Setting setting : settingList) {
-            if (setting.getName().equals(name)) {
-                return setting;
+    public BaseSetting findSettingByName(String name) {
+        for (BaseSetting baseSetting : baseSettingList) {
+            if (baseSetting.getName().equals(name)) {
+                return baseSetting;
             }
         }
         return null;
     }
 
-    public List<Setting> getSettingList() {
-        return settingList;
+    public List<BaseSetting> getBaseSettingList() {
+        return baseSettingList;
     }
 
     /**
@@ -106,20 +134,16 @@ public class SettingManager {
             }
         }
 
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = factory.newDocumentBuilder();
-        Document document = db.newDocument();
+        Document document = XmlUtil.newDocument();
 
         Element rootElement = document.createElement("Setting");
         document.appendChild(rootElement);
 
-        for (Setting setting : settingList) {
-            rootElement.appendChild(setting.getXml(document));
+        for (BaseSetting baseSetting : baseSettingList) {
+            rootElement.appendChild(baseSetting.getXml(document));
         }
 
-        TransformerFactory tff = TransformerFactory.newInstance();
-        Transformer tf = tff.newTransformer();
-        tf.transform(new DOMSource(document), new StreamResult(new File(basepath + settingXmlFile)));
+        XmlUtil.saveDocumentToFile(basepath + settingXmlFile, document);
     }
 
     /**
@@ -135,49 +159,48 @@ public class SettingManager {
         if (!file.exists()) {//if no xml file then exit
             return;
         }
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = factory.newDocumentBuilder();
-        Document doc = db.parse(basepath + settingXmlFile);
+        Document doc = XmlUtil.readFileGetDocument(basepath + settingXmlFile);
 
         Node rootElement = doc.getElementsByTagName("Setting").item(0);
         NodeList settingNodeList = rootElement.getChildNodes();
         for (int i = 0; i < settingNodeList.getLength(); i++) {
-            newSetting(new Setting(settingNodeList.item(i)));
+            addSetting(settingNodeList.item(i));
         }
     }
 
     public void init() {
-        newSetting("playName", "NOSET", "@bell need use", SettingType.STRING);
+        addSetting("playName", "NOSET", "@bell need use", SettingType.STRING);
 //        newSetting("triggerDebug","on","trigger match print trigger name",SettingType.BOOLEAN);
-        newSetting("battleEndHeal", "true", "battle end use reply", SettingType.BOOLEAN);
+        addSetting("battleEndHeal", "true", "battle end use reply", SettingType.BOOLEAN);
 
-        newSetting("battleEndStartHealHpRate", "60", "set battle end < X% hp start heal(clw and food)", SettingType.INT);
-        newSetting("clwEndHpLoss", "40", "set hp>=hpmax-X end clw", SettingType.INT);
-        newSetting("clwBlackList", "", "set clw blacklist(battleEnd and command)", SettingType.LIST);
+        addSetting("battleEndStartHealHpRate", "60", "set battle end < X% hp start heal(clw and food)", SettingType.INT);
+        addSetting("clwEndHpLoss", "40", "set hp>=hpmax-X end clw", SettingType.INT);
+        addSetting("clwBlackList", "", "set clw blacklist(battleEnd and command)", SettingType.LIST);
 
-        newSetting("foodHpLoss", "200", "set hp<=hpmax-X start food", SettingType.INT);
-        newSetting("foodMaxSize", "50", "set food vitae max size", SettingType.INT);
-        newSetting("eachVitaeHpr", "8", "set each vitae hp", SettingType.INT);
-        newSetting("foodBlackList", "", "set food blacklist(battleEnd and command)", SettingType.LIST);
+        addSetting("foodHpLoss", "200", "set hp<=hpmax-X start food", SettingType.INT);
+        addSetting("foodMaxSize", "50", "set food vitae max size", SettingType.INT);
+        addSetting("eachVitaeHpr", "8", "set each vitae hp", SettingType.INT);
+        addSetting("foodBlackList", "", "set food blacklist(battleEnd and command)", SettingType.LIST);
 
-        newSetting("foodPotentia", "true", "food potentia to target minion", SettingType.BOOLEAN);
-        newSetting("foodPotentiaTraget", "minion", "food potentia to target minion", SettingType.STRING);
-        newSetting("foodPotentiaSize", "800", "have XX potentia food potentia", SettingType.INT);
+        addSetting("foodPotentia", "true", "food potentia to target minion", SettingType.BOOLEAN);
+        addSetting("foodPotentiaTraget", "minion", "food potentia to target minion", SettingType.STRING);
+        addSetting("foodPotentiaSize", "800", "have XX potentia food potentia", SettingType.INT);
     }
 
     /**
      * match show set and set value
+     *
      * @param clientGUI context
-     * @param matcher matcher
+     * @param matcher   matcher
      */
-    public void interpreter(ClientGUI clientGUI, Matcher matcher){
-        if (matcher.group(1)==null){//show set
-            clientGUI.printText(Global.GENERIC, settingManager.toString());
-        }else {
-            for (Setting setting:settingList){
-                if (setting.getName().equals(matcher.group(1))){
-                    if (!setting.interpreter(matcher.group(2))){//if fail print info
-                        clientGUI.printText(Global.GENERIC, TextUtil.colorText("Set fail\n",TextUtil.RED));
+    public void interpreter(ClientGUI clientGUI, Matcher matcher) {
+        if (matcher.group(1) == null) {//show set
+            clientGUI.printText(PluginMain.GENERIC, settingManager.toString());
+        } else {
+            for (BaseSetting baseSetting : baseSettingList) {
+                if (baseSetting.getName().equals(matcher.group(1))) {
+                    if (!baseSetting.interpreter(matcher.group(2))) {//if fail print info
+                        clientGUI.printText(PluginMain.GENERIC, TextUtil.colorText("Set fail\n", TextUtil.RED));
                     }
                     break;
                 }
@@ -188,8 +211,8 @@ public class SettingManager {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder("--------------Setting--------------\n");
-        for (Setting setting:settingList){
-            s.append(setting.toString()).append("\n");
+        for (BaseSetting baseSetting : baseSettingList) {
+            s.append(baseSetting.toString()).append("\n");
         }
         s.append("--------------Setting End----------\n");
         return s.toString();

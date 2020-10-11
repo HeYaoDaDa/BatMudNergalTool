@@ -42,8 +42,8 @@ public class ClwAction extends MyAction {
     private Minion getTarget() {
         Minion target = null;
         for (Minion minion : play.getMinionList()) {
-            if (minion.getHp() <= minion.getHpMax() - Integer.parseInt(settingManager.getSetting("clwEndHpLoss").getValue()) &&
-                    !settingManager.getSetting("clwBlackList").getListValue().contains(minion.getName())) {
+            if (minion.getHp() <= minion.getHpMax() - Integer.parseInt(settingManager.findSettingByName("clwEndHpLoss").getValue()) &&
+                    !settingManager.findSettingByName("clwBlackList").getListValue().contains(minion.getName())) {
                 target = minion;
             }
         }
@@ -69,13 +69,13 @@ public class ClwAction extends MyAction {
         triggerList.add("NotSpClwAction");
         triggerList.add("SpellEndClwAction");
         triggerList.add("Movement");
-        myTriggerManager.newTrigger("NotSpClwAction",
+        myTriggerManager.addTrigger("NotSpClwAction",
                 "^You do not have enough spell points to cast the spell",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
                     startSpr();
                 }, true, false, false);
-        myTriggerManager.newTrigger("SpellEndClwAction",
+        myTriggerManager.addTrigger("SpellEndClwAction",
                 "^You are done with the chant.",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
@@ -86,7 +86,7 @@ public class ClwAction extends MyAction {
                         }
                     }, 500);
                 }, true, false, false);
-        myTriggerManager.newTrigger("Movement",
+        myTriggerManager.addTrigger("Movement",
                 "^Your movement prevents you from casting the spell.",
                 (batClientPlugin, matcher) ->
                         offTrigger(triggerList),

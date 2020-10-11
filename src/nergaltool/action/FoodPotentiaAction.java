@@ -19,7 +19,7 @@ public class FoodPotentiaAction extends MyAction {
 
     @Override
     public void run() {
-        if (play.getPotentia() > Integer.parseInt(settingManager.getSetting("foodPotentiaSize").getValue())){
+        if (play.getPotentia() > Integer.parseInt(settingManager.findSettingByName("foodPotentiaSize").getValue())){
             startFood();
         }else {
             super.run();
@@ -41,20 +41,20 @@ public class FoodPotentiaAction extends MyAction {
      */
     private void startFood() {
         SpellUtil.food(clientGUI,
-                settingManager.getSetting("foodPotentiaTraget").getValue(),
+                settingManager.findSettingByName("foodPotentiaTraget").getValue(),
                 play.getPotentia(),
                 "potentia");
         List<String> triggerList = new ArrayList<>();
         triggerList.add("NotSpFoodPotentiaAction");
         triggerList.add("SpellEndFoodPotentiaAction");
         triggerList.add("Movement");
-        myTriggerManager.newTrigger("NotSpFoodPotentiaAction",
+        myTriggerManager.addTrigger("NotSpFoodPotentiaAction",
                 "^You do not have enough spell points to cast the spell",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
                     startSpr();
                 }, true, false, false);
-        myTriggerManager.newTrigger("SpellEndFoodPotentiaAction",
+        myTriggerManager.addTrigger("SpellEndFoodPotentiaAction",
                 "^You are done with the chant.",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
@@ -65,7 +65,7 @@ public class FoodPotentiaAction extends MyAction {
                         }
                     }, 500);
                 }, true, false, false);
-        myTriggerManager.newTrigger("Movement",
+        myTriggerManager.addTrigger("Movement",
                 "^Your movement prevents you from casting the spell.",
                 (batClientPlugin, matcher) ->
                         offTrigger(triggerList),

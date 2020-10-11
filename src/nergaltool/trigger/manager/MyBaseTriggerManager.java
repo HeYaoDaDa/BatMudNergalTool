@@ -1,43 +1,24 @@
 package nergaltool.trigger.manager;
 
 
+import com.mythicscape.batclient.interfaces.BatClientPlugin;
 import nergaltool.trigger.bean.MyTrigger;
 import nergaltool.trigger.bean.TriggerBody;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 
-/**
- * Trigger manager supper class
- */
-public class MyBaseTriggerManager {
-    //manager Trigger
+public abstract class MyBaseTriggerManager<T> {
     protected final List<MyTrigger> myTriggerList = new ArrayList<>();
 
-    /**
-     * create trigger method
-     *
-     * @param name        trigger name key
-     * @param regexp      regular
-     * @param triggerBody trigger match method
-     * @param isAction    action
-     * @param isGag       gag
-     * @param isExpand    expand
-     */
-    public void newTrigger(String name, String regexp, TriggerBody triggerBody, boolean isAction, boolean isGag, boolean isExpand) {
-        newTrigger(new MyTrigger(name, regexp, triggerBody, isAction, isGag, isExpand));
+    public void addTrigger(String name, String regexp, TriggerBody triggerBody, boolean isAction, boolean isGag, boolean isExpand) {
+        addTrigger(new MyTrigger(name, regexp, triggerBody, isAction, isGag, isExpand));
     }
 
-    /**
-     * cteate trigger method
-     *
-     * @param myTrigger trigger
-     */
-    public void newTrigger(MyTrigger myTrigger) {
-        //find trigger is existence
-        MyTrigger oldTrigger = getMyTrigger(myTrigger.getName());
+    public void addTrigger(MyTrigger myTrigger) {
+        MyTrigger oldTrigger = findTriggerByName(myTrigger.getName());
         if (oldTrigger != null) {
-            //if existence update old trigger
             oldTrigger.setRegexp(myTrigger.getRegexp());
             oldTrigger.setTriggerBody(myTrigger.getTriggerBody());
             oldTrigger.setAction(myTrigger.isAction());
@@ -47,18 +28,59 @@ public class MyBaseTriggerManager {
         }
     }
 
-    /**
-     * use name find trigger on list
-     *
-     * @param name trigger name
-     * @return trigger
-     */
-    public MyTrigger getMyTrigger(String name) {
+    public T processAllTrigger(BatClientPlugin batClientPlugin, T content) {
+        return new TriggerHander(batClientPlugin, content, myTriggerList).processAllTrigger();
+    }
+
+    abstract protected T setGagContent(T content);
+
+    abstract protected Matcher matcher(T content, MyTrigger myTrigger);
+
+    public MyTrigger findTriggerByName(String name) {
         for (MyTrigger myTrigger : myTriggerList) {
             if (myTrigger.getName().equals(name)) {
                 return myTrigger;
             }
         }
         return null;
+    }
+
+    class TriggerHander {
+        private T content;
+        private final BatClientPlugin batClientPlugin;
+        private final List<MyTrigger> myTriggerList;
+
+        public TriggerHander(BatClientPlugin batClientPlugin, T content, List<MyTrigger> myTriggerList) {
+            this.content = content;
+            this.batClientPlugin = batClientPlugin;
+            this.myTriggerList = myTriggerList;
+        }
+
+        public T processAllTrigger() {
+            boolean isMatch = false;
+            for (MyTrigger myTrigger : myTriggerList) {
+                isMatch = process(myTrigger);
+            }
+            if (isMatch) {
+                return this.content;
+            } else {
+                return null;
+            }
+        }
+
+        private boolean process(MyTrigger myTrigger) {
+            boolean isMatch = false;
+            if (myTrigger.isAction()) {
+                Matcher matcher = matcher(content, myTrigger);
+                if (matcher.find()) {
+                    isMatch = true;
+                    myTrigger.getTriggerBody().body(batClientPlugin, matcher);
+                    if (myTrigger.isGag()) {
+                        content = setGagContent(content);
+                    }
+                }
+            }
+            return isMatch;
+        }
     }
 }
