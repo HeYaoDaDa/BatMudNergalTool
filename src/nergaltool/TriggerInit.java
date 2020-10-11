@@ -26,11 +26,11 @@ public class TriggerInit {
     private final MyCommandTriggerManager myCommandTriggerManager = MyCommandTriggerManager.getInstance();
     private final List<String> mobs = new ArrayList<>();
     private final int automFoodPotentiaSize = 940;
-    private final ClientGUI myCLientGUI;
+    private final ClientGUI clientGUI;
     private Timer combatTimer;
 
     public TriggerInit(ClientGUI clientGUI) {
-        myCLientGUI = clientGUI;
+        this.clientGUI = clientGUI;
     }
     public void init(){
         loadTrigger();
@@ -109,7 +109,7 @@ public class TriggerInit {
                     play.setVitae(Integer.parseInt(matcher.group(1)));
                     play.setPotentia(Integer.parseInt(matcher.group(2)));
                     if (Math.max(play.getVitae(), play.getPotentia()) >= automFoodPotentiaSize) {
-                        myCLientGUI.printText(PluginMain.PLUGIN_NAME, TextUtil.colorText("!!!!HAVE A P/V IS FULL!!!!\n", TextUtil.RED));
+                        clientGUI.printText(PluginMain.PLUGIN_NAME, TextUtil.colorText("!!!!HAVE A P/V IS FULL!!!!\n", TextUtil.RED));
                     }
                 }, true, false, false);
         //nergal sc,update minion food time
@@ -190,7 +190,7 @@ public class TriggerInit {
                         combatTimer.schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                myCLientGUI.doCommand("@scan all");
+                                clientGUI.doCommand("@scan all");
                             }
                         }, 1, 2500);
                     }
@@ -202,7 +202,7 @@ public class TriggerInit {
                     if (play.isCombat()) {
                         play.setCombat(false);
                         combatTimer.cancel();
-                        MyAction replyAction = new ReplyAction(myCLientGUI);
+                        MyAction replyAction = new ReplyAction(clientGUI);
                         replyAction.run();
                     }
                 }, true, false, false);//Gag one scan
@@ -213,9 +213,9 @@ public class TriggerInit {
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            myCLientGUI.printText(PluginMain.PLUGIN_NAME, "The room have :\n");
+                            clientGUI.printText(PluginMain.PLUGIN_NAME, "The room have :\n");
                             for (String s : mobs) {
-                                myCLientGUI.printText(PluginMain.PLUGIN_NAME, "    " + s + "\n");
+                                clientGUI.printText(PluginMain.PLUGIN_NAME, "    " + s + "\n");
                             }
                         }
                     }, 50);
@@ -240,28 +240,28 @@ public class TriggerInit {
                                 minionInfo.append("\n");
                                 minionInfo.append(name.toString());
                             }
-                            myCLientGUI.printText(PluginMain.PLUGIN_NAME, minionInfo.toString() + "\n");
+                            clientGUI.printText(PluginMain.PLUGIN_NAME, minionInfo.toString() + "\n");
                             break;
                         case "play":
-                            myCLientGUI.printText(PluginMain.PLUGIN_NAME, play.toString() + "\n");
+                            clientGUI.printText(PluginMain.PLUGIN_NAME, play.toString() + "\n");
                             break;
                     }
                 }, true, true, false);
         //reply
         myCommandTriggerManager.addTrigger("nergaltoolReply", "^nergaltool reply$",
                 (batClientPlugin, matcher) -> {
-                    MyAction combatAction = new CombatAction(myCLientGUI, play);
+                    MyAction combatAction = new CombatAction(clientGUI, play);
                     combatAction.run();
                 }, true, true, false);
         //set show
         myCommandTriggerManager.addTrigger("nergaltoolSet", "^nergaltool set ?([a-zA-Z]+)? ?([a-zA-Z0-9\\s]+)?",
-                (batClientPlugin, matcher) -> settingManager.interpreter(myCLientGUI, matcher), true, true, false);
+                (batClientPlugin, matcher) -> settingManager.interpreter(clientGUI, matcher), true, true, false);
         //show all monster
         myCommandTriggerManager.addTrigger("nergaltoolMonster", "^nergaltool monster",
-                (batClientPlugin, matcher) -> MonsterInformation.interpreter(myCLientGUI, matcher), true, true, false);
+                (batClientPlugin, matcher) -> MonsterInformation.interpreter(clientGUI, matcher), true, true, false);
         //remove monster index
         myCommandTriggerManager.addTrigger("nergaltoolMonsterRemove", "^nergaltool monster remove ([0-9]+)",
-                (batClientPlugin, matcher) -> MonsterInformation.interpreter(myCLientGUI, matcher), true, true, false);
+                (batClientPlugin, matcher) -> MonsterInformation.interpreter(clientGUI, matcher), true, true, false);
         //harvest
         myCommandTriggerManager.addTrigger("nergaltoolharv", "^nergaltool harvest$",
                 (batClientPlugin, matcher) -> {
@@ -276,11 +276,11 @@ public class TriggerInit {
                         }
                         if (!isTwo)
                             MonsterInformation.monsterList.add(monsterName);
-                        MyAction myAction = new HarvestAction(myCLientGUI, monsterName);
+                        MyAction myAction = new HarvestAction(clientGUI, monsterName);
                         myAction.run();
                     } else {
-                        myCLientGUI.doCommand("@bell " + settingManager.findSettingByName("playName").getValue());
-                        myCLientGUI.printText(PluginMain.PLUGIN_NAME, TextUtil.colorText("no harvest here\n", TextUtil.RED));
+                        clientGUI.doCommand("@bell " + settingManager.findSettingByName("playName").getValue());
+                        clientGUI.printText(PluginMain.PLUGIN_NAME, TextUtil.colorText("no harvest here\n", TextUtil.RED));
                     }
                 }, true, true, false);
     }
