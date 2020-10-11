@@ -2,7 +2,6 @@ package nergaltool;
 
 import com.mythicscape.batclient.interfaces.*;
 import nergaltool.action.*;
-import nergaltool.action.InitStatsAction;
 import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
 import nergaltool.bean.Play;
@@ -25,7 +24,7 @@ import java.util.TimerTask;
 /**
  * plugin main
  */
-public class PluginMain extends BatClientPlugin implements BatClientPluginTrigger, BatClientPluginCommandTrigger, BatClientPluginUtil {
+public class PluginMain extends BatClientPlugin implements BatClientPluginTrigger, BatClientPluginCommandTrigger, BatClientPluginUtil, BatClientPluginNetwork {
     public static final String PLUGIN_NAME = "NergalTool";
     public static final String GENERIC = "Generic";
 
@@ -36,29 +35,23 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
     private final MyTriggerManager myTriggerManager = MyTriggerManager.getInstance();
     private final MyCommandTriggerManager myCommandTriggerManager = MyCommandTriggerManager.getInstance();
     private Timer combatTimer;
-    private boolean needinit;
     private final List<String> mobs = new ArrayList<>();
+    private final int automFoodPotentiaSize = 940;
+    private final int upDateSpellCost = 5 * 60 * 1000;
 
     @Override
     public void loadPlugin() {
         settingManager.init();
+        myCLientGUI = getClientGUI();
         try {
             settingManager.read(getBaseDirectory());
             MonsterInformation.read(getBaseDirectory());
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }
-        new Timer().schedule(new TimerTask() {//each 5 minute
-            @Override
-            public void run() {
-                needinit = true;
-            }
-        }, 0, 5 * 60 * 1000);
-        myCLientGUI = getClientGUI();
-        myCLientGUI.printText(getName(), TextUtil.colorText("--- Loading " + getName() + " ---\n", TextUtil.GREEN));
-
         loadTrigger();
         loadCommandTrigger();
+        myCLientGUI.printText(getName(), TextUtil.colorText("--- Loading " + getName() + " ---\n", TextUtil.GREEN));
     }
 
     @Override
@@ -158,7 +151,7 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
                 (batClientPlugin, matcher) -> {
                     play.setVitae(Integer.parseInt(matcher.group(1)));
                     play.setPotentia(Integer.parseInt(matcher.group(2)));
-                    if (Math.max(play.getVitae(), play.getPotentia()) >= 950) {
+                    if (Math.max(play.getVitae(), play.getPotentia()) >= automFoodPotentiaSize) {
                         getClientGUI().printText(getName(), TextUtil.colorText("!!!!HAVE A P/V IS FULL!!!!\n", TextUtil.RED));
                     }
                 }, true, false, false);
@@ -242,7 +235,7 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
                             public void run() {
                                 getClientGUI().doCommand("@scan all");
                             }
-                        }, 1000, 2500);
+                        }, 1, 2500);
                     }
                 }, true, false, false);
         //Combat end
@@ -336,25 +329,17 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
      */
     private void reply() {
         MyAction start = new ReplyAction(myCLientGUI);
-        MyAction init = new MyAction(myCLientGUI);
-        if (SpellUtil.foodSp == 0 || needinit) {
-            SpellUtil.hvSp = SpellUtil.rpSp = SpellUtil.foodSp = SpellUtil.clwSp = 0;
-            needinit = false;
-            init = new InitStatsAction(myCLientGUI);
-        }
         MyAction food = new FoodAction(myCLientGUI);
         MyAction clw = new ClwAction(myCLientGUI);
         MyAction foodPotentia = new FoodPotentiaAction(myCLientGUI);
         MyAction spr = new SprAction(myCLientGUI, Math.max(SpellUtil.hvSp, SpellUtil.rpSp));
         MyAction bell = new BellAction(myCLientGUI);
 
-        start.decorate(init);
-        init.decorate(food);
+        start.decorate(food);
         food.decorate(clw);
         clw.decorate(foodPotentia);
         foodPotentia.decorate(spr);
         spr.decorate(bell);
-
 
         start.run();
     }
@@ -385,4 +370,23 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
         }
     }
 
+    @Override
+    public void connect() {
+        automupDateSpCost();
+    }
+
+    private void automupDateSpCost() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                MyAction initAction = new InitStatsAction(myCLientGUI);
+                initAction.run();
+            }
+        }, 0, upDateSpellCost);
+    }
+
+    @Override
+    public void disconnect() {
+
+    }
 }
