@@ -1,6 +1,7 @@
-package nergaltool.action.base;
+package nergaltool.action;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
+import nergaltool.action.base.MyAction;
 import nergaltool.trigger.bean.MyTrigger;
 import nergaltool.trigger.manager.MyTriggerManager;
 import nergaltool.utils.SpellUtil;
@@ -12,10 +13,11 @@ public class InitStatsAction extends MyAction {
     public InitStatsAction(ClientGUI clientGUI) {
         super(clientGUI);
     }
+
     @Override
     public void run() {
         MyTrigger spellSp = myTriggerManager.findTriggerByName("SpellSp");
-        if (spellSp ==null||spellSp.isAction()){
+        if (spellSp == null || spellSp.isAction()) {
             myTriggerManager.addTrigger("SpellSp",
                     "^Spell point cost: ([0-9]+)",
                     (batClientPlugin, matcher) -> {
@@ -35,8 +37,8 @@ public class InitStatsAction extends MyAction {
                             //exit begin next action
                             super.run();
                         }
-                    }, true, false,false);
-        }else{
+                    }, true, false, false);
+        } else {
             spellSp.setAction(true);
         }
         clientGUI.doCommand("@help spell harvest vitae;" +

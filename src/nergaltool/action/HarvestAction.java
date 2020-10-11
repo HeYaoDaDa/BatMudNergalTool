@@ -38,8 +38,8 @@ public class HarvestAction extends MyAction {
         }
         List<String> triggerList = new ArrayList<>();
         triggerList.add("NoTraget");
-        triggerList.add("NotSpClwAction");
-        triggerList.add("SpellEndClwAction");
+        triggerList.add("NotSpHarvestAction");
+        triggerList.add("SpellEndHarvestAction");
         triggerList.add("Movement");
         myTriggerManager.addTrigger("NoTraget",
                 "Cast (Reap Potentia)|(Harvest Vitae) at what?",
@@ -51,13 +51,13 @@ public class HarvestAction extends MyAction {
                     super.run();
                 },
                 true, false,false);
-        myTriggerManager.addTrigger("NotSpClwAction",
+        myTriggerManager.addTrigger("NotSpHarvestAction",
                 "^You do not have enough spell points to cast the spell",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
                     startSpr();
                 }, true, false, false);
-        myTriggerManager.addTrigger("SpellEndClwAction",
+        myTriggerManager.addTrigger("SpellEndHarvestAction",
                 "^You are done with the chant.",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);

@@ -2,7 +2,7 @@ package nergaltool;
 
 import com.mythicscape.batclient.interfaces.*;
 import nergaltool.action.*;
-import nergaltool.action.base.InitStatsAction;
+import nergaltool.action.InitStatsAction;
 import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
 import nergaltool.bean.Play;

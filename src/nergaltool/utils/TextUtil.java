@@ -36,4 +36,8 @@ public class TextUtil {
     public static String colorText(String content,String color){
         return BOLD+color+content+RESET;
     }
+
+    public static long formatTime(long time){
+        return (System.currentTimeMillis()-time)/1000;
+    }
 }

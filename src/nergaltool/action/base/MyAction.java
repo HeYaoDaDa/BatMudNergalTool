@@ -3,7 +3,6 @@ package nergaltool.action.base;
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.bean.Play;
 import nergaltool.setting.SettingManager;
-import nergaltool.trigger.manager.MyCommandTriggerManager;
 import nergaltool.trigger.manager.MyTriggerManager;
 
 import java.util.List;
@@ -17,14 +16,14 @@ public class MyAction {
     protected Play play = Play.getInstance();
     protected SettingManager settingManager = SettingManager.getInstance();
     protected MyTriggerManager myTriggerManager = MyTriggerManager.getInstance();
-    protected MyCommandTriggerManager myCommandTriggerManager = MyCommandTriggerManager.getInstance();
 
-    public MyAction(ClientGUI clientGUI){
+    public MyAction(ClientGUI clientGUI) {
         this.clientGUI = clientGUI;
     }
 
     /**
      * set next action
+     *
      * @param myAction next action
      */
     public void decorate(MyAction myAction) {
@@ -42,10 +41,11 @@ public class MyAction {
 
     /**
      * clear all trigger
+     *
      * @param triggerList trigger name list
      */
-    protected void offTrigger(List<String> triggerList){
-        for (String s:triggerList){
+    protected void offTrigger(List<String> triggerList) {
+        for (String s : triggerList) {
             myTriggerManager.findTriggerByName(s).setAction(false);
         }
     }
