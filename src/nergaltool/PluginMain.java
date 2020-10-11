@@ -1,7 +1,10 @@
 package nergaltool;
 
 import com.mythicscape.batclient.interfaces.*;
-import nergaltool.action.*;
+import nergaltool.action.CombatAction;
+import nergaltool.action.ReplyAction;
+import nergaltool.action.atom.HarvestAction;
+import nergaltool.action.atom.InitStatsAction;
 import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
 import nergaltool.bean.Play;
@@ -9,7 +12,6 @@ import nergaltool.setting.SettingManager;
 import nergaltool.trigger.manager.MyCommandTriggerManager;
 import nergaltool.trigger.manager.MyTriggerManager;
 import nergaltool.utils.MonsterInformation;
-import nergaltool.utils.SpellUtil;
 import nergaltool.utils.TextUtil;
 import org.xml.sax.SAXException;
 
@@ -328,46 +330,16 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
      * reply
      */
     private void reply() {
-        MyAction start = new ReplyAction(myCLientGUI);
-        MyAction food = new FoodAction(myCLientGUI);
-        MyAction clw = new ClwAction(myCLientGUI);
-        MyAction foodPotentia = new FoodPotentiaAction(myCLientGUI);
-        MyAction spr = new SprAction(myCLientGUI, Math.max(SpellUtil.hvSp, SpellUtil.rpSp));
-        MyAction bell = new BellAction(myCLientGUI);
-
-        start.decorate(food);
-        food.decorate(clw);
-        clw.decorate(foodPotentia);
-        foodPotentia.decorate(spr);
-        spr.decorate(bell);
-
-        start.run();
+        MyAction combatAction = new CombatAction(myCLientGUI, play);
+        combatAction.run();
     }
 
     /**
      * combat end
      */
     private void combatEnd() {
-        boolean needHeal = false;
-        int maxSp = Math.max(SpellUtil.hvSp, SpellUtil.rpSp);
-        for (Minion minion : minionList) {
-            if (minion.getHp() <= minion.getHpMax() * Integer.parseInt(settingManager.findSettingByName("battleEndStartHealHpRate").getValue()) * 0.01) {
-                needHeal = true;
-                break;
-            }
-        }
-        if (needHeal && Boolean.parseBoolean(settingManager.findSettingByName("battleEndHeal").getValue())) {
-            reply();
-        } else {
-            if (play.getSp() < maxSp) {
-                MyAction spr = new SprAction(myCLientGUI, maxSp);
-                MyAction bell = new BellAction(myCLientGUI);
-                spr.decorate(bell);
-                spr.run();
-            } else {
-                new BellAction(myCLientGUI).run();
-            }
-        }
+        MyAction replyAction = new ReplyAction(myCLientGUI);
+        replyAction.run();
     }
 
     @Override
