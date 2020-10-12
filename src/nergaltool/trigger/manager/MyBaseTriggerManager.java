@@ -12,11 +12,11 @@ import java.util.regex.Matcher;
 public abstract class MyBaseTriggerManager<T> {
     protected final List<MyTrigger> myTriggerList = new ArrayList<>();
 
-    public void addTrigger(String name, String regexp, TriggerBody triggerBody, boolean isAction, boolean isGag, boolean isExpand) {
-        addTrigger(new MyTrigger(name, regexp, triggerBody, isAction, isGag, isExpand));
+    public void appendTrigger(String name, String regexp, TriggerBody triggerBody, boolean isAction, boolean isGag, boolean isExpand) {
+        appendTrigger(new MyTrigger(name, regexp, triggerBody, isAction, isGag, isExpand));
     }
 
-    public void addTrigger(MyTrigger myTrigger) {
+    public void appendTrigger(MyTrigger myTrigger) {
         MyTrigger oldTrigger = findTriggerByName(myTrigger.getName());
         if (oldTrigger != null) {
             oldTrigger.setRegexp(myTrigger.getRegexp());

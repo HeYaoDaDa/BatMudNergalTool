@@ -41,13 +41,13 @@ public class TriggerInit {
      * set Trigger
      */
     private void loadTrigger() {
-        myTriggerManager.addTrigger("NergalScoreMINIONS",
+        myTriggerManager.appendTrigger("NergalScoreMINIONS",
                 " #\"\"\"\"_MINIONS_ \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"###\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"######\"\"\" ",
                 (batClientPlugin, matcher) ->
                         minionList.clear()
                 , true, false, false);
         //nergal score,add minion to minionList
-        myTriggerManager.addTrigger("NergalScoreMinion",
+        myTriggerManager.appendTrigger("NergalScoreMinion",
                 " #\\s+([A-Za-z]+(\\s[a-z]+)*)\\s+" +
                         "HP: ([0-9]+) \\(([0-9]+)\\)\\s+" +
                         "SP: ([0-9]+) \\(([0-9]+)\\)\\s+" +
@@ -79,19 +79,19 @@ public class TriggerInit {
                 }
                 , true, false, false);
         //nergal score,update Vitae
-        myTriggerManager.addTrigger("NergalScoreVitae",
+        myTriggerManager.appendTrigger("NergalScoreVitae",
                 "You have harvested ([0-9]+) vitae to empower you.",
                 (batClientPlugin, matcher) ->
                         play.setVitae(Integer.parseInt(matcher.group(1)))
                 , true, false, false);
         //nergal score,update Pontentia
-        myTriggerManager.addTrigger("NergalScorePotentia",
+        myTriggerManager.appendTrigger("NergalScorePotentia",
                 "You have reaped ([0-9]+) potentia to empower you.",
                 (batClientPlugin, matcher) ->
                         play.setPotentia(Integer.parseInt(matcher.group(1)))
                 , true, false, false);
         //Sc,update paly stats
-        myTriggerManager.addTrigger("PlaySc",
+        myTriggerManager.appendTrigger("PlaySc",
                 "hp: ([0-9]+) \\(([0-9]+)\\) \\[(\\S[0-9]+)*\\] " +
                         "sp: ([0-9]+) \\(([0-9]+)\\) \\[(\\S[0-9]+)*\\] " +
                         "ep: ([0-9]+) \\(([0-9]+)\\) \\[(\\S[0-9]+)*\\]",
@@ -104,7 +104,7 @@ public class TriggerInit {
                     play.setEpMax(Integer.parseInt(matcher.group(8)));
                 }, true, false, false);
         //nergal sc,update play enemy
-        myTriggerManager.addTrigger("NergalScVp",
+        myTriggerManager.appendTrigger("NergalScVp",
                 "::..:. \\[Vitae: ([0-9]+)/1000  Potentia: ([0-9]+)/1000,",
                 (batClientPlugin, matcher) -> {
                     play.setVitae(Integer.parseInt(matcher.group(1)));
@@ -114,7 +114,7 @@ public class TriggerInit {
                     }
                 }, true, false, false);
         //nergal sc,update minion food time
-        myTriggerManager.addTrigger("NergalScFoodTime",
+        myTriggerManager.appendTrigger("NergalScFoodTime",
                 "::..:. \\[Invigorated: ([A-Za-z]+(\\s[a-z]+)*) \\(([0-9]+)s\\)," +
                         " ([A-Za-z]+(\\s[a-z]+)*) \\(([0-9]+)s\\)," +
                         " ([A-Za-z]+(\\s[a-z]+)*) \\(([0-9]+)s\\)\\]",
@@ -133,7 +133,7 @@ public class TriggerInit {
                     }
                 }, true, false, false);
         //minion XX sc,update minion stats
-        myTriggerManager.addTrigger("MinionSc",
+        myTriggerManager.appendTrigger("MinionSc",
                 "::..:. ([A-Za-z]+(\\s[a-z]+)*) " +
                         "\\[Hp: ([0-9]+) \\(([0-9]+)\\)( \\(\\S[0-9]+\\))*, " +
                         "Sp: ([0-9]+) \\(([0-9]+)\\)( \\(\\S[0-9]+\\))*, " +
@@ -162,17 +162,17 @@ public class TriggerInit {
                             Integer.parseInt(matcher.group(10))));
                 }, true, false, false);
         //hibernating end,update play last hibernating time
-        myTriggerManager.addTrigger("HibernatingEnd",
+        myTriggerManager.appendTrigger("HibernatingEnd",
                 "^As the roots subside releasing you from their embrace you feel invigorated.",
                 (batClientPlugin, matcher) ->
                         play.setLastHibernatingTime(System.currentTimeMillis()), true, false, false);
         //sleep awaken,update play last sleep time
-        myTriggerManager.addTrigger("SleepEnd",
+        myTriggerManager.appendTrigger("SleepEnd",
                 "^You awaken from your short rest, and feel slightly better.",
                 (batClientPlugin, matcher) ->
                         play.setLastSleepTime(System.currentTimeMillis()), true, false, false);
         //food succes,update minion food time
-        myTriggerManager.addTrigger("FoodSuccess",
+        myTriggerManager.appendTrigger("FoodSuccess",
                 "You raise your hand towards ([A-Za-z]+(\\s[a-z]+)*) and faint line of ethereal energy",
                 (batClientPlugin, matcher) -> {
                     for (Minion minion : minionList) {
@@ -182,7 +182,7 @@ public class TriggerInit {
                     }
                 }, true, false, false);
         //Combat and Scan is a pair
-        myTriggerManager.addTrigger("Combat",
+        myTriggerManager.appendTrigger("Combat",
                 "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\* Round",
                 (batClientPlugin, matcher) -> {
                     if (!play.isCombat()) {
@@ -197,7 +197,7 @@ public class TriggerInit {
                     }
                 }, true, false, false);
         //Combat end
-        myTriggerManager.addTrigger("Scan",
+        myTriggerManager.appendTrigger("Scan",
                 "You are not in combat right now.",
                 (batClientPlugin, matcher) -> {
                     if (play.isCombat()) {
@@ -208,7 +208,7 @@ public class TriggerInit {
                     }
                 }, true, false, false);//Gag one scan
         //move to new room
-        myTriggerManager.addTrigger("NewRoom", "^(Obvious exits are)|^(Obvious exit is)|(Exits?:  )",
+        myTriggerManager.appendTrigger("NewRoom", "^(Obvious exits are)|^(Obvious exit is)|(Exits?:  )",
                 (batClientPlugin, matcher) -> {
                     mobs.clear();
                     new Timer().schedule(new TimerTask() {
@@ -222,7 +222,7 @@ public class TriggerInit {
                     }, 50);
                 }, true, false, false);
         //room monster,color code
-        myTriggerManager.addTrigger("RoomMonster",
+        myTriggerManager.appendTrigger("RoomMonster",
                 "^\u001B\\[1;32m([A-Za-z,'\\s-]+)\u001B\\[0m$",
                 (batClientPlugin, matcher) -> mobs.add(matcher.group(1)), true, false, true);
     }
@@ -232,7 +232,7 @@ public class TriggerInit {
      */
     private void loadCommandTrigger() {
         //debug info
-        myCommandTriggerManager.addTrigger("nergaltoolDebug", "^nergaltool debug ([a-z]+)$",
+        myCommandTriggerManager.appendTrigger("nergaltoolDebug", "^nergaltool debug ([a-z]+)$",
                 (batClientPlugin, matcher) -> {
                     switch (matcher.group(1)) {
                         case "minion":
@@ -249,22 +249,22 @@ public class TriggerInit {
                     }
                 }, true, true, false);
         //reply
-        myCommandTriggerManager.addTrigger("nergaltoolReply", "^nergaltool reply$",
+        myCommandTriggerManager.appendTrigger("nergaltoolReply", "^nergaltool reply$",
                 (batClientPlugin, matcher) -> {
                     MyAction combatAction = new CombatAction(clientGUI, play);
                     combatAction.run();
                 }, true, true, false);
         //set show
-        myCommandTriggerManager.addTrigger("nergaltoolSet", "^nergaltool set ?([a-zA-Z]+)? ?([a-zA-Z0-9\\s]+)?",
+        myCommandTriggerManager.appendTrigger("nergaltoolSet", "^nergaltool set ?([a-zA-Z]+)? ?([a-zA-Z0-9\\s]+)?",
                 (batClientPlugin, matcher) -> settingManager.interpreter(clientGUI, matcher), true, true, false);
         //show all monster
-        myCommandTriggerManager.addTrigger("nergaltoolMonster", "^nergaltool monster",
+        myCommandTriggerManager.appendTrigger("nergaltoolMonster", "^nergaltool monster",
                 (batClientPlugin, matcher) -> MonsterInformation.interpreter(clientGUI, matcher), true, true, false);
         //remove monster index
-        myCommandTriggerManager.addTrigger("nergaltoolMonsterRemove", "^nergaltool monster remove ([0-9]+)",
+        myCommandTriggerManager.appendTrigger("nergaltoolMonsterRemove", "^nergaltool monster remove ([0-9]+)",
                 (batClientPlugin, matcher) -> MonsterInformation.interpreter(clientGUI, matcher), true, true, false);
         //harvest
-        myCommandTriggerManager.addTrigger("nergaltoolharv", "^nergaltool harvest$",
+        myCommandTriggerManager.appendTrigger("nergaltoolharv", "^nergaltool harvest$",
                 (batClientPlugin, matcher) -> {
                     if (mobs.size() >= 1) {
                         boolean isTwo = false;

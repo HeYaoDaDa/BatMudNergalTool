@@ -49,12 +49,12 @@ public class SettingManager {
      * @param describe describe
      * @param type     type
      */
-    public void addSetting(String name, String value, String describe, SettingType type) {
-        addSetting(SettingFactory.newSetting(name, value, describe, type));
+    public void appendSetting(String name, String value, String describe, SettingType type) {
+        appendSetting(SettingFactory.newSetting(name, value, describe, type));
     }
 
-    public void addSetting(Node node) {
-        addSetting(SettingFactory.newSetting(node));
+    public void appendSetting(Node node) {
+        appendSetting(SettingFactory.newSetting(node));
     }
 
     /**
@@ -62,7 +62,7 @@ public class SettingManager {
      *
      * @param baseSetting new setting
      */
-    public void addSetting(BaseSetting baseSetting) {
+    public void appendSetting(BaseSetting baseSetting) {
         //find setting is existence
         BaseSetting oldBaseSetting = findSettingByName(baseSetting.getName());
         if (oldBaseSetting != null) {
@@ -138,27 +138,27 @@ public class SettingManager {
         Node rootElement = doc.getElementsByTagName("Setting").item(0);
         NodeList settingNodeList = rootElement.getChildNodes();
         for (int i = 0; i < settingNodeList.getLength(); i++) {
-            addSetting(settingNodeList.item(i));
+            appendSetting(settingNodeList.item(i));
         }
     }
 
     public void init() {
-        addSetting("playName", "NOSET", "@bell need use", SettingType.STRING);
+        appendSetting("playName", "NOSET", "@bell need use", SettingType.STRING);
 //        newSetting("triggerDebug","on","trigger match print trigger name",SettingType.BOOLEAN);
-        addSetting("battleEndHeal", "true", "battle end use reply", SettingType.BOOLEAN);
+        appendSetting("battleEndHeal", "true", "battle end use reply", SettingType.BOOLEAN);
 
-        addSetting("battleEndStartHealHpRate", "60", "set battle end < X% hp start heal(clw and food)", SettingType.INT);
-        addSetting("clwEndHpLoss", "40", "set hp>=hpmax-X end clw", SettingType.INT);
-        addSetting("clwBlackList", "", "set clw blacklist(battleEnd and command)", SettingType.LIST);
+        appendSetting("battleEndStartHealHpRate", "60", "set battle end < X% hp start heal(clw and food)", SettingType.INT);
+        appendSetting("clwEndHpLoss", "40", "set hp>=hpmax-X end clw", SettingType.INT);
+        appendSetting("clwBlackList", "", "set clw blacklist(battleEnd and command)", SettingType.LIST);
 
-        addSetting("foodHpLoss", "200", "set hp<=hpmax-X start food", SettingType.INT);
-        addSetting("foodMaxSize", "50", "set food vitae max size", SettingType.INT);
-        addSetting("eachVitaeHpr", "8", "set each vitae hp", SettingType.INT);
-        addSetting("foodBlackList", "", "set food blacklist(battleEnd and command)", SettingType.LIST);
+        appendSetting("foodHpLoss", "200", "set hp<=hpmax-X start food", SettingType.INT);
+        appendSetting("foodMaxSize", "50", "set food vitae max size", SettingType.INT);
+        appendSetting("eachVitaeHpr", "8", "set each vitae hp", SettingType.INT);
+        appendSetting("foodBlackList", "", "set food blacklist(battleEnd and command)", SettingType.LIST);
 
-        addSetting("foodPotentia", "true", "food potentia to target minion", SettingType.BOOLEAN);
-        addSetting("foodPotentiaTraget", "minion", "food potentia to target minion", SettingType.STRING);
-        addSetting("foodPotentiaSize", "800", "have XX potentia food potentia", SettingType.INT);
+        appendSetting("foodPotentia", "true", "food potentia to target minion", SettingType.BOOLEAN);
+        appendSetting("foodPotentiaTraget", "minion", "food potentia to target minion", SettingType.STRING);
+        appendSetting("foodPotentiaSize", "800", "have XX potentia food potentia", SettingType.INT);
     }
 
     /**

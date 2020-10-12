@@ -18,7 +18,7 @@ public class InitStatsAction extends MyAction {
     public void run() {
         MyTrigger spellSp = myTriggerManager.findTriggerByName("SpellSp");
         if (spellSp == null || spellSp.isAction()) {
-            myTriggerManager.addTrigger("SpellSp",
+            myTriggerManager.appendTrigger("SpellSp",
                     "^Spell point cost: ([0-9]+)",
                     (batClientPlugin, matcher) -> {
                         if (SpellUtil.hvSp == 0) {

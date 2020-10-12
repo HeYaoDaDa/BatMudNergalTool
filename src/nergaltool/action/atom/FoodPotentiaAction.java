@@ -48,13 +48,13 @@ public class FoodPotentiaAction extends MyAction {
         triggerList.add("NotSpFoodPotentiaAction");
         triggerList.add("SpellEndFoodPotentiaAction");
         triggerList.add("Movement");
-        myTriggerManager.addTrigger("NotSpFoodPotentiaAction",
+        myTriggerManager.appendTrigger("NotSpFoodPotentiaAction",
                 "^You do not have enough spell points to cast the spell",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
                     startSpr();
                 }, true, false, false);
-        myTriggerManager.addTrigger("SpellEndFoodPotentiaAction",
+        myTriggerManager.appendTrigger("SpellEndFoodPotentiaAction",
                 "^You are done with the chant.",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
@@ -65,7 +65,7 @@ public class FoodPotentiaAction extends MyAction {
                         }
                     }, 500);
                 }, true, false, false);
-        myTriggerManager.addTrigger("Movement",
+        myTriggerManager.appendTrigger("Movement",
                 "^Your movement prevents you from casting the spell.",
                 (batClientPlugin, matcher) ->
                         offTrigger(triggerList),

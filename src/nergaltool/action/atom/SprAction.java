@@ -46,13 +46,13 @@ public class SprAction extends MyAction {
         triggerList.add("Movement");
         triggerList.add("HibernatingEndSprAction");
         triggerList.add("HibernationFail");
-        myTriggerManager.addTrigger("HibernatingEndSprAction",
+        myTriggerManager.appendTrigger("HibernatingEndSprAction",
                 "^As the roots subside releasing you from their embrace you feel invigorated.",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
                     run();
                 }, true, false, false);
-        myTriggerManager.addTrigger("HibernationFail",
+        myTriggerManager.appendTrigger("HibernationFail",
                 "(You don't feel like hibernating yet.)|(You fail to fall into dreary hibernation.)",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
@@ -74,14 +74,14 @@ public class SprAction extends MyAction {
         triggerList.add("Movement");
         triggerList.add("SleepEndSprAction");
         triggerList.add("SleepFail");
-        myTriggerManager.addTrigger("SleepEndSprAction",
+        myTriggerManager.appendTrigger("SleepEndSprAction",
                 "^You awaken from your short rest, and feel slightly better.",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
                     run();
                 }, true, false, false);
 
-        myTriggerManager.addTrigger("SleepFail",
+        myTriggerManager.appendTrigger("SleepFail",
                 "You don't quite feel like camping at the moment.",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
@@ -96,7 +96,7 @@ public class SprAction extends MyAction {
      * wait spr
      */
     private void startWait() {
-        myTriggerManager.addTrigger("PlayScSprAction",
+        myTriggerManager.appendTrigger("PlayScSprAction",
                 "hp: ([0-9]+) \\(([0-9]+)\\) \\[(\\S[0-9]+)*\\] " +
                         "sp: ([0-9]+) \\(([0-9]+)\\) \\[(\\S[0-9]+)*\\] " +
                         "ep: ([0-9]+) \\(([0-9]+)\\) \\[(\\S[0-9]+)*\\]",
@@ -112,7 +112,7 @@ public class SprAction extends MyAction {
      * move stop skill
      */
     private void movementTrigger(List<String> triggerList) {
-        myTriggerManager.addTrigger("Movement",
+        myTriggerManager.appendTrigger("Movement",
                 "^Your movement prevents you from doing the skill.",
                 (batClientPlugin, matcher) ->
                         offTrigger(triggerList),

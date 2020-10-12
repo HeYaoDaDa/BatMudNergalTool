@@ -10,7 +10,7 @@ class MyCommandTriggerManagerTest {
 
     @Test
     void testProcessAllTrigger() {
-        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
+        instance.appendTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, true, false, false);
         String result = instance.processAllTrigger(null, "test");
         assertEquals("test", result);
@@ -18,7 +18,7 @@ class MyCommandTriggerManagerTest {
 
     @Test
     void testProcessAllTriggerNoAction() {
-        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
+        instance.appendTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, false, false, false);
         String result = instance.processAllTrigger(null, "test");
         assertNull(result);
@@ -26,7 +26,7 @@ class MyCommandTriggerManagerTest {
 
     @Test
     void testProcessAllTriggerNoActionButGag() {
-        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
+        instance.appendTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, false, true, false);
         String result = instance.processAllTrigger(null, "test");
         assertNull(result);
@@ -34,7 +34,7 @@ class MyCommandTriggerManagerTest {
 
     @Test
     void testProcessAllTriggerGag() {
-        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
+        instance.appendTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, true, true, false);
         String result = instance.processAllTrigger(null, "test");
         assertEquals("", result);
@@ -42,7 +42,7 @@ class MyCommandTriggerManagerTest {
 
     @Test
     void testFindTriggerByName() {
-        instance.addTrigger("test", "test", (batClientPlugin, matcher) -> {
+        instance.appendTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, true, false, false);
         assertEquals("test", instance.findTriggerByName("test").getName());
         assertNull(instance.findTriggerByName("Notest"));

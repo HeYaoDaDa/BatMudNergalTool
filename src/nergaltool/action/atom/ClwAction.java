@@ -69,13 +69,13 @@ public class ClwAction extends MyAction {
         triggerList.add("NotSpClwAction");
         triggerList.add("SpellEndClwAction");
         triggerList.add("Movement");
-        myTriggerManager.addTrigger("NotSpClwAction",
+        myTriggerManager.appendTrigger("NotSpClwAction",
                 "^You do not have enough spell points to cast the spell",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
                     startSpr();
                 }, true, false, false);
-        myTriggerManager.addTrigger("SpellEndClwAction",
+        myTriggerManager.appendTrigger("SpellEndClwAction",
                 "^You are done with the chant.",
                 (batClientPlugin, matcher) -> {
                     offTrigger(triggerList);
@@ -86,7 +86,7 @@ public class ClwAction extends MyAction {
                         }
                     }, 500);
                 }, true, false, false);
-        myTriggerManager.addTrigger("Movement",
+        myTriggerManager.appendTrigger("Movement",
                 "^Your movement prevents you from casting the spell.",
                 (batClientPlugin, matcher) ->
                         offTrigger(triggerList),
