@@ -31,14 +31,17 @@ public class MonsterInformation {
      */
     public static void save(String basePath) throws ParserConfigurationException, TransformerException {
         Document document = XmlUtil.newDocument();
+        saveMosterToDocument(document);
+        XmlUtil.saveDocumentToFile(basePath + monsterInfoXmlFile, document);
+    }
 
+    private static void saveMosterToDocument(Document document) {
         Element rootElement = document.createElement("MonsterInfo");
         for (String name : monsterList) {
             Element element = document.createElement("name");
             element.setTextContent(name);
             rootElement.appendChild(element);
         }
-        XmlUtil.saveDocumentToFile(basePath + monsterInfoXmlFile, document);
     }
 
     /**
@@ -50,11 +53,19 @@ public class MonsterInformation {
      * @throws SAXException                 error
      */
     public static void read(String basePath) throws ParserConfigurationException, IOException, SAXException {
-        File file = new File(basePath + monsterInfoXmlFile);
-        if (!file.exists()) {//if no xml file then exit
+        String path = basePath + monsterInfoXmlFile;
+        if (!isExists(path)) {//if no xml file then exit
             return;
         }
-        Document doc = XmlUtil.readFileGetDocument(basePath + monsterInfoXmlFile);
+        Document doc = XmlUtil.readFileGetDocument(path);
+        readMobsterFromDocument(doc);
+    }
+
+    private static boolean isExists(String path) {
+        return new File(path).exists();
+    }
+
+    private static void readMobsterFromDocument(Document doc) {
         NodeList mobsNodeList = doc.getElementsByTagName("MonsterInfo");
         NodeList mobs = mobsNodeList.item(0).getChildNodes();
         for (int i = 0; i < mobs.getLength(); i++) {
