@@ -25,20 +25,23 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
     public static final String GENERIC = "Generic";
 
     private final SettingManager settingManager = SettingManager.getInstance();
-    private final int upDateSpellCost = 5 * 60 * 1000;
+    private final Timer automUpdateSpCostTimer = new Timer();
 
     @Override
     public void loadPlugin() {
         settingManager.init();
+        useXmlUpdate();
+        new TriggerInit(getClientGUI()).init();
+        getClientGUI().printText(getName(), TextUtil.colorText("--- Loading " + getName() + " ---\n", TextUtil.GREEN));
+    }
+
+    private void useXmlUpdate() {
         try {
             settingManager.read(getBaseDirectory());
             MonsterInformation.read(getBaseDirectory());
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }
-        TriggerInit triggerInit = new TriggerInit(getClientGUI());
-        triggerInit.init();
-        getClientGUI().printText(getName(), TextUtil.colorText("--- Loading " + getName() + " ---\n", TextUtil.GREEN));
     }
 
     @Override
@@ -58,6 +61,10 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
 
     @Override
     public void clientExit() {
+        saveDateToXml();
+    }
+
+    private void saveDateToXml() {
         try {
             settingManager.save(getBaseDirectory());
             MonsterInformation.save(getBaseDirectory());
@@ -68,11 +75,12 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
 
     @Override
     public void connect() {
-        automupDateSpCost();
+        automUpdateSpCost();
     }
 
-    private void automupDateSpCost() {
-        new Timer().schedule(new TimerTask() {
+    private void automUpdateSpCost() {
+        final int upDateSpellCost = 5 * 60 * 1000;
+        automUpdateSpCostTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 MyAction initAction = new InitStatsAction(getClientGUI());
@@ -83,6 +91,6 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
 
     @Override
     public void disconnect() {
-
+        automUpdateSpCostTimer.cancel();
     }
 }
