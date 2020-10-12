@@ -2,6 +2,9 @@ package nergaltool.setting;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.PluginMain;
+import nergaltool.setting.base.BaseSetting;
+import nergaltool.setting.base.SettingFactory;
+import nergaltool.setting.base.SettingType;
 import nergaltool.utils.TextUtil;
 import nergaltool.utils.XmlUtil;
 import org.w3c.dom.Document;

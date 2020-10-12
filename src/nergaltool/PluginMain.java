@@ -4,6 +4,7 @@ import com.mythicscape.batclient.interfaces.*;
 import nergaltool.action.atom.InitStatsAction;
 import nergaltool.action.base.MyAction;
 import nergaltool.setting.SettingManager;
+import nergaltool.trigger.TriggerInit;
 import nergaltool.trigger.manager.MyCommandTriggerManager;
 import nergaltool.trigger.manager.MyTriggerManager;
 import nergaltool.utils.MonsterInformation;

@@ -1,5 +1,11 @@
-package nergaltool.setting;
+package nergaltool.setting.base;
 
+import nergaltool.setting.base.BaseSetting;
+import nergaltool.setting.base.SettingType;
+import nergaltool.setting.settings.BooleanSetting;
+import nergaltool.setting.settings.ListSetting;
+import nergaltool.setting.settings.NumberSetting;
+import nergaltool.setting.settings.StringSetting;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 

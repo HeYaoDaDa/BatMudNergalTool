@@ -1,6 +1,6 @@
 package nergaltool.utils;
 
-import nergaltool.setting.StringSetting;
+import nergaltool.setting.settings.StringSetting;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

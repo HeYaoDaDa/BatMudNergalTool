@@ -1,5 +1,7 @@
 package nergaltool.setting;
 
+import nergaltool.setting.base.SettingType;
+import nergaltool.setting.settings.ListSetting;
 import nergaltool.utils.XmlUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

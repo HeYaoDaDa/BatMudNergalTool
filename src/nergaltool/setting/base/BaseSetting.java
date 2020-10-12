@@ -1,4 +1,4 @@
-package nergaltool.setting;
+package nergaltool.setting.base;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

@@ -1,5 +1,7 @@
-package nergaltool.setting;
+package nergaltool.setting.settings;
 
+import nergaltool.setting.base.BaseSetting;
+import nergaltool.setting.base.SettingType;
 import org.w3c.dom.Node;
 
 public class BooleanSetting extends BaseSetting {

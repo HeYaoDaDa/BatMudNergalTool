@@ -1,5 +1,6 @@
 package nergaltool.setting;
 
+import nergaltool.setting.settings.NumberSetting;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

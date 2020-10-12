@@ -1,5 +1,7 @@
-package nergaltool.setting;
+package nergaltool.setting.settings;
 
+import nergaltool.setting.base.BaseSetting;
+import nergaltool.setting.base.SettingType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

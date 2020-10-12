@@ -1,6 +1,7 @@
-package nergaltool;
+package nergaltool.trigger;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
+import nergaltool.PluginMain;
 import nergaltool.action.CombatAction;
 import nergaltool.action.ReplyAction;
 import nergaltool.action.atom.HarvestAction;
