@@ -4,7 +4,10 @@ import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.PluginMain;
 import nergaltool.utils.TextUtil;
 import nergaltool.utils.XmlUtil;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,43 +47,11 @@ public class SettingManager {
      * @param type     type
      */
     public void addSetting(String name, String value, String describe, SettingType type) {
-        BaseSetting baseSetting = null;
-        switch (type) {
-            case STRING:
-                baseSetting = new StringSetting(name, value, describe);
-                break;
-            case INT:
-                baseSetting = new NumberSetting(name, value, describe);
-                break;
-            case BOOLEAN:
-                baseSetting = new BooleanSetting(name, value, describe);
-                break;
-            case LIST:
-                baseSetting = new ListSetting(name, value, describe);
-                break;
-        }
-        addSetting(baseSetting);
+        addSetting(SettingFactory.newSetting(name, value, describe, type));
     }
 
     public void addSetting(Node node) {
-        NamedNodeMap namedNodeMap = node.getAttributes();
-        SettingType type = SettingType.valueOf(namedNodeMap.getNamedItem("type").getNodeValue());
-        BaseSetting baseSetting = null;
-        switch (type) {
-            case STRING:
-                baseSetting = new StringSetting(node);
-                break;
-            case INT:
-                baseSetting = new NumberSetting(node);
-                break;
-            case BOOLEAN:
-                baseSetting = new BooleanSetting(node);
-                break;
-            case LIST:
-                baseSetting = new ListSetting(node);
-                break;
-        }
-        addSetting(baseSetting);
+        addSetting(SettingFactory.newSetting(node));
     }
 
     /**
