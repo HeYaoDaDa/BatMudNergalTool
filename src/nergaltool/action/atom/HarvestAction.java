@@ -2,13 +2,11 @@ package nergaltool.action.atom;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.action.base.MyAction;
-import nergaltool.utils.SpellUtil;
+import nergaltool.spell.SpellMananger;
+import nergaltool.utils.CommandUtil;
 import nergaltool.utils.TextUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import static nergaltool.PluginMain.GENERIC;
 
@@ -23,18 +21,19 @@ public class HarvestAction extends MyAction {
 
     @Override
     public void run() {
-        if (play.getSp() >= Math.max(SpellUtil.hvSp, SpellUtil.rpSp)) {
+        if (play.getSp() >= Math.max(Objects.requireNonNull(SpellMananger.findSpellByName("hv")).getSp(),
+                Objects.requireNonNull(SpellMananger.findSpellByName("hv")).getSp())) {
             startSpell();
-        }else {
+        } else {
             startSpr();
         }
     }
 
     private void startSpell() {
         if (play.getPotentia() > play.getVitae()) {
-            SpellUtil.harvest(clientGUI,monster);
+            Objects.requireNonNull(SpellMananger.findSpellByName("hv")).use(clientGUI, monster);
         } else {
-            SpellUtil.reap(clientGUI,monster);
+            Objects.requireNonNull(SpellMananger.findSpellByName("rp")).use(clientGUI, monster);
         }
         List<String> triggerList = new ArrayList<>();
         triggerList.add("NoTraget");
@@ -47,10 +46,10 @@ public class HarvestAction extends MyAction {
                     exit.cancel();
                     offTrigger(triggerList);
                     clientGUI.printText(GENERIC, TextUtil.colorText(monster + " is no in here!\n", TextUtil.RED));
-                    SpellUtil.bell(clientGUI);
+                    CommandUtil.bell(clientGUI);
                     super.run();
                 },
-                true, false,false);
+                true, false, false);
         myTriggerManager.appendTrigger("NotSpHarvestAction",
                 "^You do not have enough spell points to cast the spell",
                 (batClientPlugin, matcher) -> {
@@ -84,7 +83,8 @@ public class HarvestAction extends MyAction {
      * wait spr to hvsp
      */
     private void startSpr() {
-        SprAction sprAction = new SprAction(clientGUI,Math.max(SpellUtil.hvSp, SpellUtil.rpSp));
+        SprAction sprAction = new SprAction(clientGUI, Math.max(Objects.requireNonNull(SpellMananger.findSpellByName("hv")).getSp(),
+                Objects.requireNonNull(SpellMananger.findSpellByName("hv")).getSp()));
         sprAction.decorate(this);
         sprAction.run();
     }

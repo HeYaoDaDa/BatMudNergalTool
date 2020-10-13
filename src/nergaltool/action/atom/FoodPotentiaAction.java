@@ -2,12 +2,9 @@ package nergaltool.action.atom;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.action.base.MyAction;
-import nergaltool.utils.SpellUtil;
+import nergaltool.spell.SpellMananger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * food potentia action
@@ -19,9 +16,9 @@ public class FoodPotentiaAction extends MyAction {
 
     @Override
     public void run() {
-        if (play.getPotentia() > Integer.parseInt(settingManager.findSettingByName("foodPotentiaSize").getValue())){
+        if (play.getPotentia() > Integer.parseInt(settingManager.findSettingByName("foodPotentiaSize").getValue())) {
             startFood();
-        }else {
+        } else {
             super.run();
         }
     }
@@ -30,20 +27,17 @@ public class FoodPotentiaAction extends MyAction {
      * wait spr to foodsp
      */
     private void startSpr() {
-        SprAction sprAction = new SprAction(clientGUI, SpellUtil.foodSp);
+        SprAction sprAction = new SprAction(clientGUI, Objects.requireNonNull(SpellMananger.findSpellByName("food")).getSp());
         sprAction.decorate(this);
         sprAction.run();
     }
 
     /**
      * food
-     *
      */
     private void startFood() {
-        SpellUtil.food(clientGUI,
-                settingManager.findSettingByName("foodPotentiaTraget").getValue(),
-                play.getPotentia(),
-                "potentia");
+        Objects.requireNonNull(SpellMananger.findSpellByName("food")).use(clientGUI, settingManager.findSettingByName("foodPotentiaTraget").getValue() + " consume " +
+                play.getPotentia() + " potentia");
         List<String> triggerList = new ArrayList<>();
         triggerList.add("NotSpFoodPotentiaAction");
         triggerList.add("SpellEndFoodPotentiaAction");

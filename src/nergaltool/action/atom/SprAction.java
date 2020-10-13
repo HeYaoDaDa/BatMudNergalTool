@@ -3,7 +3,7 @@ package nergaltool.action.atom;
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.action.base.MyAction;
 import nergaltool.trigger.manager.MyTriggerManager;
-import nergaltool.utils.SpellUtil;
+import nergaltool.utils.CommandUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class SprAction extends MyAction {
      * use hibernation spr
      */
     private void startHibernation() {
-        SpellUtil.hibernation(clientGUI);
+        CommandUtil.hibernation(clientGUI);
         List<String> triggerList = new ArrayList<>();
         triggerList.add("Movement");
         triggerList.add("HibernatingEndSprAction");
@@ -69,7 +69,7 @@ public class SprAction extends MyAction {
      * use sleep spr
      */
     private void startSleep() {
-        SpellUtil.sleep(clientGUI);
+        CommandUtil.sleep(clientGUI);
         List<String> triggerList = new ArrayList<>();
         triggerList.add("Movement");
         triggerList.add("SleepEndSprAction");

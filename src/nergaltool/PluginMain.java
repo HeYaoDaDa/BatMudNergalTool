@@ -1,9 +1,8 @@
 package nergaltool;
 
 import com.mythicscape.batclient.interfaces.*;
-import nergaltool.action.atom.InitStatsAction;
-import nergaltool.action.base.MyAction;
 import nergaltool.setting.SettingManager;
+import nergaltool.spell.SpellMananger;
 import nergaltool.trigger.TriggerInit;
 import nergaltool.trigger.manager.MyCommandTriggerManager;
 import nergaltool.trigger.manager.MyTriggerManager;
@@ -83,8 +82,7 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
         automUpdateSpCostTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                MyAction initAction = new InitStatsAction(getClientGUI());
-                initAction.run();
+                SpellMananger.getInstance().initSpCost(getClientGUI());
             }
         }, 0, upDateSpellCost);
     }

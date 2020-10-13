@@ -2,7 +2,6 @@ package nergaltool.spell;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.trigger.manager.MyTriggerManager;
-import nergaltool.utils.SpellUtil;
 import nergaltool.utils.TextUtil;
 
 import java.util.ArrayList;
@@ -11,7 +10,15 @@ import java.util.List;
 import static nergaltool.PluginMain.PLUGIN_NAME;
 
 public class SpellMananger {
-    private final List<Spell> spellList = new ArrayList<>();
+    private static final List<Spell> spellList = new ArrayList<>();
+
+    //Singleton,instance
+    private static final SpellMananger spellMananger = new SpellMananger();
+
+    //Singleton,get single instance
+    public static SpellMananger getInstance() {
+        return spellMananger;
+    }
 
     public void appendSpell(String name, String command, int sp) {
         this.appendSpell(new Spell(name, command, sp));
@@ -28,7 +35,7 @@ public class SpellMananger {
         appendSpell("rp", "Reap potentia", 0);
     }
 
-    public Spell findSpellByName(String name) {
+    public static Spell findSpellByName(String name) {
         for (Spell spell : spellList) {
             if (spell.getName().equals(name)) {
                 return spell;
@@ -60,7 +67,7 @@ public class SpellMananger {
                     for (Spell spell : spellList) {
                         if (spell.getSp() == 0) {
                             spell.setSp(Integer.parseInt(matcher.group(1)));
-                            clientGUI.printText(PLUGIN_NAME, "Now " + spell.getName() + " SP cost is " + TextUtil.colorText(String.valueOf(SpellUtil.hvSp), TextUtil.RED) + "\n");
+                            clientGUI.printText(PLUGIN_NAME, "Now " + spell.getName() + " SP cost is " + TextUtil.colorText(String.valueOf(spell.getSp()), TextUtil.RED) + "\n");
                         }
                     }
                 }, true, false, false);

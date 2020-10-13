@@ -6,9 +6,10 @@ import nergaltool.action.atom.SprAction;
 import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
 import nergaltool.bean.Play;
-import nergaltool.utils.SpellUtil;
+import nergaltool.spell.SpellMananger;
 
 import java.util.List;
+import java.util.Objects;
 
 public class CombatAction extends MyAction {
     private final Play play;
@@ -22,7 +23,8 @@ public class CombatAction extends MyAction {
     public void run() {
         List<Minion> minionList = play.getMinionList();
         boolean needHeal = false;
-        int maxSp = Math.max(SpellUtil.hvSp, SpellUtil.rpSp);
+        int maxSp = Math.max(Objects.requireNonNull(SpellMananger.findSpellByName("hv")).getSp(),
+                Objects.requireNonNull(SpellMananger.findSpellByName("rp")).getSp());
         for (Minion minion : minionList) {
             if (minion.getHp() <= minion.getHpMax() * Integer.parseInt(settingManager.findSettingByName("battleEndStartHealHpRate").getValue()) * 0.01) {
                 needHeal = true;

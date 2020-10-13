@@ -3,7 +3,9 @@ package nergaltool.action;
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.action.atom.*;
 import nergaltool.action.base.MyAction;
-import nergaltool.utils.SpellUtil;
+import nergaltool.spell.SpellMananger;
+
+import java.util.Objects;
 
 public class ReplyAction extends MyAction {
     public ReplyAction(ClientGUI clientGUI) {
@@ -16,7 +18,8 @@ public class ReplyAction extends MyAction {
         MyAction food = new FoodAction(clientGUI);
         MyAction clw = new ClwAction(clientGUI);
         MyAction foodPotentia = new FoodPotentiaAction(clientGUI);
-        MyAction spr = new SprAction(clientGUI, Math.max(SpellUtil.hvSp, SpellUtil.rpSp));
+        MyAction spr = new SprAction(clientGUI, Math.max(Objects.requireNonNull(SpellMananger.findSpellByName("hv")).getSp(),
+                Objects.requireNonNull(SpellMananger.findSpellByName("rp")).getSp()));
         MyAction bell = new BellAction(clientGUI);
 
         start.decorate(food);

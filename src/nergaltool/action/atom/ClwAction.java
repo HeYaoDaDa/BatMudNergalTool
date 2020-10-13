@@ -3,12 +3,9 @@ package nergaltool.action.atom;
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
-import nergaltool.utils.SpellUtil;
+import nergaltool.spell.SpellMananger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * clw action
@@ -24,7 +21,7 @@ public class ClwAction extends MyAction {
     public void run() {
         Minion target = getTarget();
         if (target != null) {
-            if (play.getSp() < SpellUtil.clwSp) {//sp empty
+            if (play.getSp() < Objects.requireNonNull(SpellMananger.findSpellByName("clw")).getSp()) {//sp empty
                 startSpr();
             } else {
                 startClw(target);
@@ -54,7 +51,7 @@ public class ClwAction extends MyAction {
      * wait spr to clwsp
      */
     private void startSpr() {
-        SprAction sprAction = new SprAction(clientGUI, SpellUtil.clwSp);
+        SprAction sprAction = new SprAction(clientGUI, Objects.requireNonNull(SpellMananger.findSpellByName("clw")).getSp());
         sprAction.decorate(this);
         sprAction.run();
     }
@@ -64,7 +61,7 @@ public class ClwAction extends MyAction {
      * @param target clw target
      */
     private void startClw(Minion target) {
-        SpellUtil.clw(clientGUI, target.getName());
+        Objects.requireNonNull(SpellMananger.findSpellByName("clw")).use(clientGUI,target.getName());
         List<String> triggerList = new ArrayList<>();
         triggerList.add("NotSpClwAction");
         triggerList.add("SpellEndClwAction");
