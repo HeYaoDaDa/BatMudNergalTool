@@ -3,7 +3,6 @@ package nergaltool;
 import com.mythicscape.batclient.interfaces.*;
 import nergaltool.setting.SettingManager;
 import nergaltool.spell.SpellMananger;
-import nergaltool.trigger.TriggerInit;
 import nergaltool.trigger.manager.MyCommandTriggerManager;
 import nergaltool.trigger.manager.MyTriggerManager;
 import nergaltool.utils.MonsterInformation;
@@ -13,6 +12,8 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -22,6 +23,7 @@ import java.util.TimerTask;
 public class PluginMain extends BatClientPlugin implements BatClientPluginTrigger, BatClientPluginCommandTrigger, BatClientPluginUtil, BatClientPluginNetwork {
     public static final String PLUGIN_NAME = "NergalTool";
     public static final String GENERIC = "Generic";
+    public final List<String> mobs = new ArrayList<>();
 
     private final SettingManager settingManager = SettingManager.getInstance();
     private final Timer automUpdateSpCostTimer = new Timer();
@@ -30,7 +32,8 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
     public void loadPlugin() {
         settingManager.init();
         useXmlUpdate();
-        new TriggerInit(getClientGUI()).init();
+        MyTriggerManager.getInstance().init(this);
+        MyCommandTriggerManager.getInstance().init(this);
         getClientGUI().printText(getName(), TextUtil.colorText("--- Loading " + getName() + " ---\n", TextUtil.GREEN));
     }
 

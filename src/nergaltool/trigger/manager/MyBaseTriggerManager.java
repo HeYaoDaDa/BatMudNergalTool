@@ -2,6 +2,7 @@ package nergaltool.trigger.manager;
 
 
 import com.mythicscape.batclient.interfaces.BatClientPlugin;
+import nergaltool.PluginMain;
 import nergaltool.trigger.bean.MyTrigger;
 import nergaltool.trigger.bean.TriggerBody;
 
@@ -44,6 +45,8 @@ public abstract class MyBaseTriggerManager<T> {
         }
         return null;
     }
+
+    public abstract void init(PluginMain pluginMain);
 
     class TriggerHander {
         private T content;
