@@ -2,7 +2,7 @@ package nergaltool.action.atom;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.action.base.MyAction;
-import nergaltool.spell.SpellMananger;
+import nergaltool.spell.SpellManager;
 
 import java.util.*;
 
@@ -27,7 +27,7 @@ public class FoodPotentiaAction extends MyAction {
      * wait spr to foodsp
      */
     private void startSpr() {
-        SprAction sprAction = new SprAction(clientGUI, Objects.requireNonNull(SpellMananger.findSpellByName("food")).getSp());
+        SprAction sprAction = new SprAction(clientGUI, Objects.requireNonNull(SpellManager.findSpellByName("food")).getSp());
         sprAction.decorate(this);
         sprAction.run();
     }
@@ -36,7 +36,7 @@ public class FoodPotentiaAction extends MyAction {
      * food
      */
     private void startFood() {
-        Objects.requireNonNull(SpellMananger.findSpellByName("food")).use(clientGUI, settingManager.findSettingByName("foodPotentiaTraget").getValue() + " consume " +
+        Objects.requireNonNull(SpellManager.findSpellByName("food")).use(clientGUI, settingManager.findSettingByName("foodPotentiaTraget").getValue() + " consume " +
                 play.getPotentia() + " potentia");
         List<String> triggerList = new ArrayList<>();
         triggerList.add("NotSpFoodPotentiaAction");

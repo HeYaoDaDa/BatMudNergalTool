@@ -5,6 +5,7 @@ import nergaltool.PluginMain;
 import nergaltool.setting.base.BaseSetting;
 import nergaltool.setting.base.SettingFactory;
 import nergaltool.setting.base.SettingType;
+import nergaltool.utils.MyFileUtil;
 import nergaltool.utils.TextUtil;
 import nergaltool.utils.XmlUtil;
 import org.w3c.dom.Document;
@@ -21,34 +22,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-/**
- * setting manager
- */
 public class SettingManager {
-    //Singleton,instance
-    public static SettingManager settingManager = new SettingManager();
+    public static final SettingManager settingManager = new SettingManager();
     private final List<BaseSetting> baseSettingList = new ArrayList<>();
 
-    private final String pluginDir = File.separator + "conf" + File.separator + PluginMain.PLUGIN_NAME;
-    private final String settingXmlFile = pluginDir + File.separator + "Setting.xml";
+    private final String settingXmlFile = File.separator + "conf" + File.separator + PluginMain.PLUGIN_NAME + File.separator + "Setting.xml";
 
-    //Singleton,private constructor
-    private SettingManager() {
-    }
-
-    //Singleton,get single instance
     public static SettingManager getInstance() {
         return settingManager;
     }
 
-    /**
-     * add setting to list
-     *
-     * @param name     name
-     * @param value    value
-     * @param describe describe
-     * @param type     type
-     */
     public void appendSetting(String name, String value, String describe, SettingType type) {
         appendSetting(SettingFactory.newSetting(name, value, describe, type));
     }
@@ -57,13 +40,7 @@ public class SettingManager {
         appendSetting(SettingFactory.newSetting(node));
     }
 
-    /**
-     * add setting to list
-     *
-     * @param baseSetting new setting
-     */
     public void appendSetting(BaseSetting baseSetting) {
-        //find setting is existence
         BaseSetting oldBaseSetting = findSettingByName(baseSetting.getName());
         if (oldBaseSetting != null) {
             oldBaseSetting.setName(baseSetting.getName());
@@ -75,12 +52,6 @@ public class SettingManager {
         }
     }
 
-    /**
-     * use name find setting on list
-     *
-     * @param name setting name
-     * @return setting object
-     */
     public BaseSetting findSettingByName(String name) {
         for (BaseSetting baseSetting : baseSettingList) {
             if (baseSetting.getName().equals(name)) {
@@ -90,51 +61,31 @@ public class SettingManager {
         return null;
     }
 
-    public List<BaseSetting> getBaseSettingList() {
-        return baseSettingList;
+    public void save(String basePath) throws ParserConfigurationException, TransformerException {
+        Document document = XmlUtil.newDocument();
+        saveMonsterToDocument(document);
+        XmlUtil.saveDocumentToFile(basePath + settingXmlFile, document);
     }
 
-    /**
-     * save setting to xml
-     *
-     * @param basepath batclient file path
-     */
-    public void save(String basepath) throws ParserConfigurationException, TransformerException {
-        //if dir is no exists then mkdir
-        File dir = new File(basepath + pluginDir);
-        if (!dir.exists()) {
-            if (!dir.mkdir()) {//mkdir fail then return
-                return;
-            }
-        }
-
-        Document document = XmlUtil.newDocument();
-
+    private void saveMonsterToDocument(Document document) {
         Element rootElement = document.createElement("Setting");
         document.appendChild(rootElement);
 
         for (BaseSetting baseSetting : baseSettingList) {
             rootElement.appendChild(baseSetting.getXml(document));
         }
-
-        XmlUtil.saveDocumentToFile(basepath + settingXmlFile, document);
     }
 
-    /**
-     * read xml file
-     *
-     * @param basepath batclient file path
-     * @throws ParserConfigurationException error
-     * @throws IOException                  error
-     * @throws SAXException                 error
-     */
-    public void read(String basepath) throws ParserConfigurationException, IOException, SAXException {
-        File file = new File(basepath + settingXmlFile);
-        if (!file.exists()) {//if no xml file then exit
+    public void read(String basePath) throws ParserConfigurationException, IOException, SAXException {
+        String path = basePath + settingXmlFile;
+        if (!MyFileUtil.isExists(path)) {
             return;
         }
-        Document doc = XmlUtil.readFileGetDocument(basepath + settingXmlFile);
+        readMonsterFromDocument(path);
+    }
 
+    private void readMonsterFromDocument(String path) throws ParserConfigurationException, IOException, SAXException {
+        Document doc = XmlUtil.readFileGetDocument(path);
         Node rootElement = doc.getElementsByTagName("Setting").item(0);
         NodeList settingNodeList = rootElement.getChildNodes();
         for (int i = 0; i < settingNodeList.getLength(); i++) {
@@ -161,14 +112,8 @@ public class SettingManager {
         appendSetting("foodPotentiaSize", "800", "have XX potentia food potentia", SettingType.INT);
     }
 
-    /**
-     * match show set and set value
-     *
-     * @param clientGUI context
-     * @param matcher   matcher
-     */
     public void interpreter(ClientGUI clientGUI, Matcher matcher) {
-        if (matcher.group(1) == null) {//show set
+        if (matcher.group(1) == null) {
             clientGUI.printText(PluginMain.GENERIC, settingManager.toString());
         } else {
             for (BaseSetting baseSetting : baseSettingList) {

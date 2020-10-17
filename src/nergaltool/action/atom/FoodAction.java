@@ -3,7 +3,7 @@ package nergaltool.action.atom;
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
-import nergaltool.spell.SpellMananger;
+import nergaltool.spell.SpellManager;
 import nergaltool.utils.TextUtil;
 
 import java.util.*;
@@ -28,7 +28,7 @@ public class FoodAction extends MyAction {
             if (play.getVitae() < Integer.parseInt(settingManager.findSettingByName("foodMaxSize").getValue())) {
                 clientGUI.printText(PLUGIN_NAME, TextUtil.colorText("!!!!!YOU VITAE IS NO ENOUGH!!!!!\n", TextUtil.RED));
                 super.run();
-            } else if (play.getSp() < Objects.requireNonNull(SpellMananger.findSpellByName("food")).getSp()) {//sp empty
+            } else if (play.getSp() < Objects.requireNonNull(SpellManager.findSpellByName("food")).getSp()) {//sp empty
                 clientGUI.printText(PLUGIN_NAME, TextUtil.colorText("NOSP\n", TextUtil.RED));
                 startSpr();
             } else {
@@ -61,7 +61,7 @@ public class FoodAction extends MyAction {
      * wait spr to foodsp
      */
     private void startSpr() {
-        SprAction sprAction = new SprAction(clientGUI, Objects.requireNonNull(SpellMananger.findSpellByName("food")).getSp());
+        SprAction sprAction = new SprAction(clientGUI, Objects.requireNonNull(SpellManager.findSpellByName("food")).getSp());
         sprAction.decorate(this);
         sprAction.run();
     }
@@ -72,7 +72,7 @@ public class FoodAction extends MyAction {
      * @param target food target
      */
     private void startFood(Minion target) {
-        Objects.requireNonNull(SpellMananger.findSpellByName("food")).use(clientGUI, target.getName() + " consume " +
+        Objects.requireNonNull(SpellManager.findSpellByName("food")).use(clientGUI, target.getName() + " consume " +
                 Math.min((target.getHpMax() - target.getHp()) / Integer.parseInt(settingManager.findSettingByName("eachVitaeHpr").getValue()), Integer.parseInt(settingManager.findSettingByName("foodMaxSize").getValue())) +
                 " vitae");
         List<String> triggerList = new ArrayList<>();

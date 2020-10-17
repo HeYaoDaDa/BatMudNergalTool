@@ -50,7 +50,7 @@ public class MyTriggerManager extends MyBaseTriggerManager<ParsedResult> {
         final Play play = Play.getInstance();
         final List<Minion> minionList = play.getMinionList();
         final ClientGUI clientGUI = pluginMain.getClientGUI();
-        final List<String> mobs = pluginMain.mobs;
+        final List<String> mobs = pluginMain.room.getMonsterList();
         final int automFoodPotentiaSize = 940;
         Timer combatTimer = new Timer();
         myTriggerManager.appendTrigger("NergalScoreMINIONS",

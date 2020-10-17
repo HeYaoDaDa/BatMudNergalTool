@@ -10,21 +10,16 @@ import nergaltool.bean.Minion;
 import nergaltool.bean.Play;
 import nergaltool.setting.SettingManager;
 import nergaltool.trigger.bean.MyTrigger;
-import nergaltool.utils.MonsterInformation;
+import nergaltool.utils.MonsterManager;
 import nergaltool.utils.TextUtil;
 
 import java.util.List;
 import java.util.regex.Matcher;
 
-/**
- * match play input Trigger Manager
- */
 public class MyCommandTriggerManager extends MyBaseTriggerManager<String> {
-    //Singleton,instance
     private static final MyCommandTriggerManager myCommandTriggerManager = new MyCommandTriggerManager();
 
 
-    //Singleton,get single instance
     public static MyCommandTriggerManager getInstance() {
         return myCommandTriggerManager;
     }
@@ -42,8 +37,9 @@ public class MyCommandTriggerManager extends MyBaseTriggerManager<String> {
         final Play play = Play.getInstance();
         final List<Minion> minionList = play.getMinionList();
         final ClientGUI clientGUI = pluginMain.getClientGUI();
-        final List<String> mobs = pluginMain.mobs;
+        final List<String> mobs = pluginMain.room.getMonsterList();
         final SettingManager settingManager = SettingManager.getInstance();
+        final MonsterManager monsterManager = MonsterManager.getInstance();
         //debug info
         myCommandTriggerManager.appendTrigger("nergaltoolDebug", "^nergaltool debug ([a-z]+)$",
                 (batClientPlugin, matcher) -> {
@@ -72,24 +68,24 @@ public class MyCommandTriggerManager extends MyBaseTriggerManager<String> {
                 (batClientPlugin, matcher) -> settingManager.interpreter(clientGUI, matcher), true, true, false);
         //show all monster
         myCommandTriggerManager.appendTrigger("nergaltoolMonster", "^nergaltool monster",
-                (batClientPlugin, matcher) -> MonsterInformation.interpreter(clientGUI, matcher), true, true, false);
+                (batClientPlugin, matcher) -> monsterManager.interpreter(clientGUI), true, true, false);
         //remove monster index
         myCommandTriggerManager.appendTrigger("nergaltoolMonsterRemove", "^nergaltool monster remove ([0-9]+)",
-                (batClientPlugin, matcher) -> MonsterInformation.interpreter(clientGUI, matcher), true, true, false);
+                (batClientPlugin, matcher) -> monsterManager.interpreter(clientGUI), true, true, false);
         //harvest
         myCommandTriggerManager.appendTrigger("nergaltoolharv", "^nergaltool harvest$",
                 (batClientPlugin, matcher) -> {
                     if (mobs.size() >= 1) {
                         boolean isTwo = false;
                         String monsterName = mobs.get(0);
-                        for (String s : MonsterInformation.monsterList) {
+                        for (String s : MonsterManager.monsterList) {
                             if (monsterName.equals(s)) {
                                 isTwo = true;
                                 break;
                             }
                         }
                         if (!isTwo)
-                            MonsterInformation.monsterList.add(monsterName);
+                            MonsterManager.monsterList.add(monsterName);
                         MyAction myAction = new HarvestAction(clientGUI, monsterName);
                         myAction.run();
                     } else {

@@ -1,32 +1,30 @@
 package nergaltool;
 
 import com.mythicscape.batclient.interfaces.*;
+import nergaltool.bean.Room;
 import nergaltool.setting.SettingManager;
-import nergaltool.spell.SpellMananger;
+import nergaltool.spell.SpellManager;
 import nergaltool.trigger.manager.MyCommandTriggerManager;
 import nergaltool.trigger.manager.MyTriggerManager;
-import nergaltool.utils.MonsterInformation;
+import nergaltool.utils.MonsterManager;
 import nergaltool.utils.TextUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * plugin main
- */
 public class PluginMain extends BatClientPlugin implements BatClientPluginTrigger, BatClientPluginCommandTrigger, BatClientPluginUtil, BatClientPluginNetwork {
     public static final String PLUGIN_NAME = "NergalTool";
     public static final String GENERIC = "Generic";
-    public final List<String> mobs = new ArrayList<>();
+    public final Room room = new Room();
 
     private final SettingManager settingManager = SettingManager.getInstance();
+    private final MonsterManager monsterManager = MonsterManager.getInstance();
     private final Timer automUpdateSpCostTimer = new Timer();
+    private final SpellManager spellManager = SpellManager.getInstance();
 
     @Override
     public void loadPlugin() {
@@ -34,13 +32,14 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
         useXmlUpdate();
         MyTriggerManager.getInstance().init(this);
         MyCommandTriggerManager.getInstance().init(this);
+        spellManager.init();
         getClientGUI().printText(getName(), TextUtil.colorText("--- Loading " + getName() + " ---\n", TextUtil.GREEN));
     }
 
     private void useXmlUpdate() {
         try {
             settingManager.read(getBaseDirectory());
-            MonsterInformation.read(getBaseDirectory());
+            monsterManager.read(getBaseDirectory());
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }
@@ -69,7 +68,7 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
     private void saveDateToXml() {
         try {
             settingManager.save(getBaseDirectory());
-            MonsterInformation.save(getBaseDirectory());
+            monsterManager.save(getBaseDirectory());
         } catch (ParserConfigurationException | TransformerException e) {
             e.printStackTrace();
         }
@@ -85,7 +84,7 @@ public class PluginMain extends BatClientPlugin implements BatClientPluginTrigge
         automUpdateSpCostTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                SpellMananger.getInstance().initSpCost(getClientGUI());
+                spellManager.initSpCost(getClientGUI());
             }
         }, 0, upDateSpellCost);
     }

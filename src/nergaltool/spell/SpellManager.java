@@ -9,15 +9,13 @@ import java.util.List;
 
 import static nergaltool.PluginMain.PLUGIN_NAME;
 
-public class SpellMananger {
+public class SpellManager {
     private static final List<Spell> spellList = new ArrayList<>();
 
-    //Singleton,instance
-    private static final SpellMananger spellMananger = new SpellMananger();
+    private static final SpellManager SPELL_MANAGER = new SpellManager();
 
-    //Singleton,get single instance
-    public static SpellMananger getInstance() {
-        return spellMananger;
+    public static SpellManager getInstance() {
+        return SPELL_MANAGER;
     }
 
     public void appendSpell(String name, String command, int sp) {
@@ -46,7 +44,7 @@ public class SpellMananger {
 
     public void initSpCost(ClientGUI clientGUI) {
         clearSpCost();
-        appedSpellSpTrigger(clientGUI);
+        appendSpellSpTrigger(clientGUI);
         StringBuilder stringBuilder = new StringBuilder();
         helpCommand(clientGUI, stringBuilder);
     }
@@ -60,7 +58,7 @@ public class SpellMananger {
         clientGUI.doCommand(stringBuilder.toString());
     }
 
-    private void appedSpellSpTrigger(ClientGUI clientGUI) {
+    private void appendSpellSpTrigger(ClientGUI clientGUI) {
         MyTriggerManager.getInstance().appendTrigger("SpellSp",
                 "^Spell point cost: ([0-9]+)",
                 (batClientPlugin, matcher) -> {

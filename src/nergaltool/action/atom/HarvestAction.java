@@ -2,7 +2,7 @@ package nergaltool.action.atom;
 
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.action.base.MyAction;
-import nergaltool.spell.SpellMananger;
+import nergaltool.spell.SpellManager;
 import nergaltool.utils.CommandUtil;
 import nergaltool.utils.TextUtil;
 
@@ -21,8 +21,8 @@ public class HarvestAction extends MyAction {
 
     @Override
     public void run() {
-        if (play.getSp() >= Math.max(Objects.requireNonNull(SpellMananger.findSpellByName("hv")).getSp(),
-                Objects.requireNonNull(SpellMananger.findSpellByName("hv")).getSp())) {
+        if (play.getSp() >= Math.max(Objects.requireNonNull(SpellManager.findSpellByName("hv")).getSp(),
+                Objects.requireNonNull(SpellManager.findSpellByName("hv")).getSp())) {
             startSpell();
         } else {
             startSpr();
@@ -31,9 +31,9 @@ public class HarvestAction extends MyAction {
 
     private void startSpell() {
         if (play.getPotentia() > play.getVitae()) {
-            Objects.requireNonNull(SpellMananger.findSpellByName("hv")).use(clientGUI, monster);
+            Objects.requireNonNull(SpellManager.findSpellByName("hv")).use(clientGUI, monster);
         } else {
-            Objects.requireNonNull(SpellMananger.findSpellByName("rp")).use(clientGUI, monster);
+            Objects.requireNonNull(SpellManager.findSpellByName("rp")).use(clientGUI, monster);
         }
         List<String> triggerList = new ArrayList<>();
         triggerList.add("NoTraget");
@@ -83,8 +83,8 @@ public class HarvestAction extends MyAction {
      * wait spr to hvsp
      */
     private void startSpr() {
-        SprAction sprAction = new SprAction(clientGUI, Math.max(Objects.requireNonNull(SpellMananger.findSpellByName("hv")).getSp(),
-                Objects.requireNonNull(SpellMananger.findSpellByName("hv")).getSp()));
+        SprAction sprAction = new SprAction(clientGUI, Math.max(Objects.requireNonNull(SpellManager.findSpellByName("hv")).getSp(),
+                Objects.requireNonNull(SpellManager.findSpellByName("hv")).getSp()));
         sprAction.decorate(this);
         sprAction.run();
     }

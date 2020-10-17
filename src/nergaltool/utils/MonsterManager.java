@@ -13,29 +13,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 
-/**
- * autom harvest monster information manager
- */
-public class MonsterInformation {
+public class MonsterManager {
+    private static final MonsterManager monsterManager = new MonsterManager();
     public static List<String> monsterList = new ArrayList<>();
     private static final String monsterInfoXmlFile = File.separator + "conf" + File.separator + PluginMain.PLUGIN_NAME + File.separator + "monsters.xml";
 
-    /**
-     * save to xml
-     *
-     * @param basePath base path
-     * @throws ParserConfigurationException error
-     * @throws TransformerException         error
-     */
-    public static void save(String basePath) throws ParserConfigurationException, TransformerException {
+    public static MonsterManager getInstance() {
+        return monsterManager;
+    }
+
+    public void save(String basePath) throws ParserConfigurationException, TransformerException {
         Document document = XmlUtil.newDocument();
-        saveMosterToDocument(document);
+        saveMobsterToDocument(document);
         XmlUtil.saveDocumentToFile(basePath + monsterInfoXmlFile, document);
     }
 
-    private static void saveMosterToDocument(Document document) {
+    private void saveMobsterToDocument(Document document) {
         Element rootElement = document.createElement("MonsterInfo");
         for (String name : monsterList) {
             Element element = document.createElement("name");
@@ -44,28 +38,16 @@ public class MonsterInformation {
         }
     }
 
-    /**
-     * read xml
-     *
-     * @param basePath base path
-     * @throws ParserConfigurationException error
-     * @throws IOException                  error
-     * @throws SAXException                 error
-     */
-    public static void read(String basePath) throws ParserConfigurationException, IOException, SAXException {
+    public void read(String basePath) throws ParserConfigurationException, IOException, SAXException {
         String path = basePath + monsterInfoXmlFile;
-        if (!isExists(path)) {//if no xml file then exit
+        if (!MyFileUtil.isExists(path)) {
             return;
         }
+        readMobsterFromDocument(path);
+    }
+
+    private void readMobsterFromDocument(String path) throws IOException, SAXException, ParserConfigurationException {
         Document doc = XmlUtil.readFileGetDocument(path);
-        readMobsterFromDocument(doc);
-    }
-
-    private static boolean isExists(String path) {
-        return new File(path).exists();
-    }
-
-    private static void readMobsterFromDocument(Document doc) {
         NodeList mobsNodeList = doc.getElementsByTagName("MonsterInfo");
         NodeList mobs = mobsNodeList.item(0).getChildNodes();
         for (int i = 0; i < mobs.getLength(); i++) {
@@ -73,12 +55,7 @@ public class MonsterInformation {
         }
     }
 
-    /**
-     * show monster list
-     *
-     * @return monster list
-     */
-    public static String printMonsters() {
+    public String printMonsters() {
         StringBuilder s = new StringBuilder("-------------Monsters--------------\n");
         for (int i = 0; i < monsterList.size(); i++) {
             s.append(i).append(": ").append(monsterList.get(i)).append("\n");
@@ -87,17 +64,7 @@ public class MonsterInformation {
         return s.toString();
     }
 
-    public static void interpreter(ClientGUI clientGUI, Matcher matcher) {
-//        if (matcher.group(1)==null){
+    public void interpreter(ClientGUI clientGUI) {
         clientGUI.printText(PluginMain.GENERIC, printMonsters());
-//        }else {
-//            Pattern pattern = Pattern.compile("^[\\d]*$");
-//            if (pattern.matcher(matcher.group(1)).matches()) {
-//                monsterList.remove(Integer.parseInt(matcher.group(1)));
-//                clientGUI.printText(Global.GENERIC,printMonsters());
-//            } else {
-//                clientGUI.printText(Global.GENERIC,"Fail\n");
-//            }
-//        }
     }
 }
