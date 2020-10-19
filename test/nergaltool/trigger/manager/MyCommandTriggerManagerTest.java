@@ -41,6 +41,16 @@ class MyCommandTriggerManagerTest {
     }
 
     @Test
+    void testProcessAllTriggerGagTwo() {
+        instance.appendTrigger("nergaltoolMonster", "^nergaltool monster", (batClientPlugin, matcher) -> {
+        }, true, true, false);
+        instance.appendTrigger("test", "test", (batClientPlugin, matcher) -> {
+        }, true, true, false);
+        String result = instance.processAllTrigger(null, "nergaltool monster");
+        assertEquals("", result);
+    }
+
+    @Test
     void testFindTriggerByName() {
         instance.appendTrigger("test", "test", (batClientPlugin, matcher) -> {
         }, true, false, false);

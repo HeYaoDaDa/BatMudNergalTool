@@ -52,6 +52,7 @@ public abstract class MyBaseTriggerManager<T> {
         private T content;
         private final BatClientPlugin batClientPlugin;
         private final List<MyTrigger> myTriggerList;
+        private boolean isMatch = false;
 
         public TriggerHander(BatClientPlugin batClientPlugin, T content, List<MyTrigger> myTriggerList) {
             this.content = content;
@@ -60,9 +61,10 @@ public abstract class MyBaseTriggerManager<T> {
         }
 
         public T processAllTrigger() {
-            boolean isMatch = false;
             for (MyTrigger myTrigger : myTriggerList) {
                 isMatch = process(myTrigger);
+                if (isMatch &&"".equals(content))
+                    break;
             }
             if (isMatch) {
                 return this.content;
@@ -72,7 +74,6 @@ public abstract class MyBaseTriggerManager<T> {
         }
 
         private boolean process(MyTrigger myTrigger) {
-            boolean isMatch = false;
             if (myTrigger.isAction()) {
                 Matcher matcher = matcher(content, myTrigger);
                 if (matcher.find()) {
