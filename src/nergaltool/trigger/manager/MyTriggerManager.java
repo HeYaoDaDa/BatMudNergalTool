@@ -4,6 +4,7 @@ package nergaltool.trigger.manager;
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import com.mythicscape.batclient.interfaces.ParsedResult;
 import nergaltool.PluginMain;
+import nergaltool.action.CombatAction;
 import nergaltool.action.ReplyAction;
 import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
@@ -215,8 +216,8 @@ public class MyTriggerManager extends MyBaseTriggerManager<ParsedResult> {
                     if (play.isCombat()) {
                         play.setCombat(false);
                         combatTimer.cancel();
-                        MyAction replyAction = new ReplyAction(clientGUI);
-                        replyAction.run();
+                        MyAction combatAction = new CombatAction(clientGUI, play);
+                        combatAction.run();
                     }
                 }, true, false, false);//Gag one scan
         //move to new room

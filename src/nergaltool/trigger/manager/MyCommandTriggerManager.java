@@ -4,6 +4,7 @@ package nergaltool.trigger.manager;
 import com.mythicscape.batclient.interfaces.ClientGUI;
 import nergaltool.PluginMain;
 import nergaltool.action.CombatAction;
+import nergaltool.action.ReplyAction;
 import nergaltool.action.atom.HarvestAction;
 import nergaltool.action.base.MyAction;
 import nergaltool.bean.Minion;
@@ -60,8 +61,8 @@ public class MyCommandTriggerManager extends MyBaseTriggerManager<String> {
         //reply
         myCommandTriggerManager.appendTrigger("nergaltoolReply", "^nergaltool reply$",
                 (batClientPlugin, matcher) -> {
-                    MyAction combatAction = new CombatAction(clientGUI, play);
-                    combatAction.run();
+                    MyAction replyAction = new ReplyAction(clientGUI);
+                    replyAction.run();
                 }, true, true, false);
         //set show
         myCommandTriggerManager.appendTrigger("nergaltoolSet", "^nergaltool set ?([a-zA-Z]+)? ?([a-zA-Z0-9\\s]+)?",
