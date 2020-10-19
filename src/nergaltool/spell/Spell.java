@@ -38,6 +38,6 @@ public class Spell {
     }
 
     public void use(ClientGUI clientGUI, String parameter) {
-        clientGUI.doCommand("cast " + command + "at " + parameter);
+        clientGUI.doCommand("cast " + command + " at " + parameter);
     }
 }
