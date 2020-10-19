@@ -66,6 +66,7 @@ public class SpellManager {
                         if (spell.getSp() == 0) {
                             spell.setSp(Integer.parseInt(matcher.group(1)));
                             clientGUI.printText(PLUGIN_NAME, "Now " + spell.getName() + " SP cost is " + TextUtil.colorText(String.valueOf(spell.getSp()), TextUtil.RED) + "\n");
+                            break;
                         }
                     }
                 }, true, false, false);
