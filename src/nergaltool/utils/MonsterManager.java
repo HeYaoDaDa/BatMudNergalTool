@@ -31,6 +31,7 @@ public class MonsterManager {
 
     private void saveMobsterToDocument(Document document) {
         Element rootElement = document.createElement("MonsterInfo");
+        document.appendChild(rootElement);
         for (String name : monsterList) {
             Element element = document.createElement("name");
             element.setTextContent(name);
